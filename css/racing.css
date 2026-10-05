@@ -1,0 +1,1178 @@
+/* ==========================================================================
+   RACING PRO DESIGN SYSTEM - ESTILO RED BULL MOTORSPORT CON PALETA ESCOLAR
+   Colores: Azul Marino Nocturno, Amarillo Competición, Azul Eléctrico y Blanco
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,900&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
+
+:root {
+  /* Paleta Base */
+  --bg-deep: #050b14;
+  --bg-dark: #0a1322;
+  --bg-card: rgba(14, 25, 45, 0.85);
+  --bg-card-hover: rgba(20, 37, 66, 0.95);
+  --border-card: rgba(255, 230, 0, 0.18);
+  --border-light: rgba(255, 255, 255, 0.08);
+
+  /* Colores Escuela & Racing */
+  --accent-yellow: #FFE600;
+  --accent-yellow-hover: #FFF04D;
+  --accent-yellow-glow: rgba(255, 230, 0, 0.45);
+  --racing-blue: #0066FF;
+  --racing-blue-dark: #003087;
+  --racing-cyan: #00F0FF;
+  --text-white: #FFFFFF;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+
+  /* Semáforo & Luces F1 */
+  --f1-red-off: #200608;
+  --f1-red-off-border: #3b0d10;
+  --f1-red-on: #FF1A1A;
+  --f1-red-glow: rgba(255, 26, 26, 0.85);
+  --f1-green-on: #00FF66;
+  --f1-green-glow: rgba(0, 255, 102, 0.85);
+
+  /* Estado */
+  --danger-color: #FF334B;
+  --success-color: #00E676;
+  --warning-color: #FFB300;
+
+  /* Tipografías */
+  --font-race: 'Barlow Condensed', sans-serif;
+  --font-ui: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-deep);
+  color: var(--text-white);
+  font-family: var(--font-ui);
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.18) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(255, 230, 0, 0.08) 0%, transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* ==========================================================================
+   APP HEADER
+   ========================================================================== */
+.race-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7, 14, 27, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid rgba(255, 230, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.header-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.school-logo-img {
+  height: 52px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  background: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 230, 0, 0.4);
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-main-title {
+  font-family: var(--font-race);
+  font-size: 1.7rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-white);
+  line-height: 1;
+}
+
+.brand-main-title span {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 14px var(--accent-yellow-glow);
+}
+
+.brand-sub-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--racing-cyan);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tag-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 230, 0, 0.15);
+  border: 1px solid var(--accent-yellow);
+  font-family: var(--font-race);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-yellow);
+  letter-spacing: 1px;
+}
+
+.tag-live::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-yellow);
+  box-shadow: 0 0 10px var(--accent-yellow);
+  animation: pulse-live 1.5s infinite;
+}
+
+@keyframes pulse-live {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.btn-nav {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-white);
+  font-family: var(--font-race);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-nav:hover {
+  background: var(--racing-blue);
+  border-color: var(--racing-cyan);
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
+}
+
+.btn-sound-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-white);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.btn-sound-toggle:hover {
+  background: rgba(255, 230, 0, 0.2);
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+/* ==========================================================================
+   MAIN WRAPPER & SCREEN CONTAINERS
+   ========================================================================== */
+.main-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+.screen-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 2px solid var(--border-card);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 102, 255, 0.12);
+  padding: 32px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.screen-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--racing-blue) 0%, var(--accent-yellow) 50%, var(--racing-blue) 100%);
+}
+
+/* ==========================================================================
+   REGISTRO / LOGIN DEL PARTICIPANTE
+   ========================================================================== */
+.hero-banner {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.racing-badge-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, var(--racing-blue-dark), var(--bg-dark));
+  border: 1px solid var(--racing-blue);
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-family: var(--font-race);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-yellow);
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-family: var(--font-race);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.05;
+  margin-bottom: 10px;
+}
+
+.hero-title span {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 20px var(--accent-yellow-glow);
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.login-form {
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.form-label {
+  font-family: var(--font-race);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-label span.req {
+  color: var(--accent-yellow);
+  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  text-transform: none;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--accent-yellow);
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.race-input {
+  width: 100%;
+  padding: 16px 16px 16px 48px;
+  background: rgba(5, 11, 20, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.25s ease;
+  user-select: text;
+}
+
+.race-input:focus {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 15px var(--accent-yellow-glow);
+  background: rgba(10, 19, 34, 0.95);
+}
+
+.race-input::placeholder {
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+/* Botón de Inicio / Ignición */
+.btn-ignition {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent-yellow) 0%, #E6AC00 100%);
+  color: #050b14;
+  font-family: var(--font-race);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 14px;
+  padding: 20px 32px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(255, 230, 0, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-top: 10px;
+}
+
+.btn-ignition:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(255, 230, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, var(--accent-yellow-hover) 0%, #FFB700 100%);
+}
+
+.btn-ignition:active {
+  transform: translateY(2px) scale(0.99);
+  box-shadow: 0 4px 15px rgba(255, 230, 0, 0.3);
+}
+
+.btn-ignition .icon-arrow {
+  font-size: 1.6rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-ignition:hover .icon-arrow {
+  transform: translateX(6px);
+}
+
+/* Tarjetas Informativas / Reglas Rápidas */
+.stand-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+}
+
+.rule-box {
+  background: rgba(10, 19, 34, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.rule-box .rule-num {
+  font-family: var(--font-race);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--accent-yellow);
+}
+
+.rule-box .rule-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   SECCIÓN DEL TEST DE REACCIÓN (SEMÁFORO DE FÓRMULA 1)
+   ========================================================================== */
+.test-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  min-height: 480px;
+}
+
+.player-active-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 19, 34, 0.8);
+  border: 1px solid rgba(255, 230, 0, 0.2);
+  border-radius: 12px;
+  padding: 10px 18px;
+  margin-bottom: 24px;
+}
+
+.player-info-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-race);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.player-info-tag .label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.player-info-tag .name {
+  color: var(--accent-yellow);
+}
+
+/* Gantry / Caja del Semáforo de F1 */
+.f1-lights-gantry {
+  background: #090e17;
+  border: 3px solid #1a2638;
+  border-radius: 20px;
+  padding: 24px 30px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(0, 0, 0, 0.9);
+  display: inline-flex;
+  gap: 20px;
+  margin: 15px 0 35px;
+  position: relative;
+}
+
+.f1-lights-gantry::after {
+  content: 'START GRID TELEMETRY';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.f1-light-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #05080e;
+  padding: 10px;
+  border-radius: 35px;
+  border: 2px solid #121a24;
+}
+
+.f1-bulb {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--f1-red-off);
+  border: 3px solid var(--f1-red-off-border);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.9);
+  position: relative;
+  transition: all 0.08s ease-in-out;
+}
+
+/* Luz Encendida */
+.f1-bulb.on {
+  background: var(--f1-red-on);
+  border-color: #FFAEAE;
+  box-shadow: 0 0 30px var(--f1-red-glow), 0 0 60px var(--f1-red-glow), inset 0 0 10px #FFFFFF;
+}
+
+/* Área de Reacción Táctil Gigante */
+.reaction-touch-zone {
+  width: 100%;
+  min-height: 240px;
+  background: linear-gradient(180deg, rgba(14, 25, 45, 0.95) 0%, rgba(8, 15, 28, 0.95) 100%);
+  border: 3px dashed rgba(255, 230, 0, 0.3);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+  padding: 30px 20px;
+  position: relative;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+
+.reaction-touch-zone:hover {
+  border-color: var(--accent-yellow);
+  background: linear-gradient(180deg, rgba(18, 33, 60, 0.95) 0%, rgba(10, 20, 38, 0.95) 100%);
+}
+
+.reaction-touch-zone:active {
+  transform: scale(0.99);
+}
+
+.reaction-touch-zone.state-ready {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 30px rgba(255, 230, 0, 0.15);
+}
+
+.reaction-touch-zone.state-go {
+  background: linear-gradient(135deg, #00C853 0%, #009624 100%) !important;
+  border-color: #00FF66 !important;
+  box-shadow: 0 0 60px rgba(0, 255, 102, 0.7) !important;
+  border-style: solid !important;
+  animation: pulse-go 0.2s infinite alternate;
+}
+
+@keyframes pulse-go {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+.reaction-touch-zone.state-jumpstart {
+  background: linear-gradient(135deg, #D50000 0%, #9B0000 100%) !important;
+  border-color: #FF1744 !important;
+  box-shadow: 0 0 60px rgba(255, 23, 68, 0.7) !important;
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+.touch-icon {
+  font-size: 3.5rem;
+  color: var(--accent-yellow);
+  filter: drop-shadow(0 0 15px var(--accent-yellow-glow));
+}
+
+.touch-title {
+  font-family: var(--font-race);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-white);
+  line-height: 1.1;
+}
+
+.touch-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 480px;
+}
+
+/* ==========================================================================
+   PANTALLA DE RESULTADOS / TELEMETRÍA
+   ========================================================================== */
+.results-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  border-radius: 999px;
+  font-family: var(--font-race);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.result-badge.rank-f1 {
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  color: #000;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.result-badge.rank-pro {
+  background: linear-gradient(90deg, #00F0FF, #0066FF);
+  color: #000;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+
+.result-badge.rank-normal {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.time-display-box {
+  background: #060c17;
+  border: 3px solid var(--accent-yellow);
+  box-shadow: 0 0 40px var(--accent-yellow-glow), inset 0 0 25px rgba(0,0,0,0.8);
+  border-radius: 24px;
+  padding: 24px 40px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.time-number {
+  font-family: var(--font-race);
+  font-size: clamp(3.5rem, 9vw, 6.5rem);
+  font-weight: 900;
+  color: var(--accent-yellow);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  text-shadow: 0 0 25px var(--accent-yellow-glow);
+}
+
+.time-unit {
+  font-family: var(--font-race);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-white);
+  letter-spacing: 4px;
+  margin-top: 4px;
+}
+
+.telemetry-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.telemetry-item {
+  background: rgba(10, 19, 34, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.telemetry-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.telemetry-val {
+  font-family: var(--font-race);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-white);
+  margin-top: 4px;
+}
+
+.live-sync-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(0, 230, 118, 0.12);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.results-actions {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.btn-retry, .btn-next-player {
+  flex: 1;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-family: var(--font-race);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-retry {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-white);
+}
+
+.btn-retry:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #FFF;
+}
+
+.btn-next-player {
+  background: var(--racing-blue);
+  border: 2px solid var(--racing-cyan);
+  color: #FFF;
+  box-shadow: 0 4px 18px rgba(0, 102, 255, 0.4);
+}
+
+.btn-next-player:hover {
+  background: #0052cc;
+  box-shadow: 0 6px 25px rgba(0, 102, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   PANEL ADMIN & LEADERBOARD EN VIVO (TV STAND VIEW)
+   ========================================================================== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 992px) {
+  .admin-grid {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+/* Métricas Rápidas */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, var(--accent-yellow-glow) 0%, transparent 70%);
+}
+
+.metric-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.metric-value {
+  font-family: var(--font-race);
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--accent-yellow);
+  margin-top: 6px;
+  line-height: 1;
+}
+
+.metric-sub {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* PODIO TOP 3 ESTILO F1 */
+.podium-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px 10px 10px;
+  margin-bottom: 24px;
+}
+
+.podium-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30%;
+  max-width: 140px;
+  position: relative;
+  text-align: center;
+}
+
+.podium-step.gold { order: 2; height: 180px; }
+.podium-step.silver { order: 1; height: 140px; }
+.podium-step.bronze { order: 3; height: 120px; }
+
+.podium-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0a1322;
+  border: 3px solid var(--accent-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: -10px;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.podium-step.gold .podium-avatar {
+  width: 58px;
+  height: 58px;
+  font-size: 1.8rem;
+  border-color: #FFD700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.podium-pillar {
+  width: 100%;
+  flex: 1;
+  background: linear-gradient(180deg, rgba(20, 38, 70, 0.9) 0%, rgba(8, 16, 32, 0.95) 100%);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 6px;
+}
+
+.podium-step.gold .podium-pillar {
+  border-color: #FFD700;
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.25) 0%, rgba(14, 25, 45, 0.95) 100%);
+}
+
+.podium-rank-num {
+  font-family: var(--font-race);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.podium-step.gold .podium-rank-num { color: #FFD700; }
+.podium-step.silver .podium-rank-num { color: #C0C0C0; }
+.podium-step.bronze .podium-rank-num { color: #CD7F32; }
+
+.podium-player-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.podium-player-time {
+  font-family: var(--font-race);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--accent-yellow);
+}
+
+/* Tabla de Posiciones / Leaderboard */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 15, 27, 0.7);
+}
+
+.race-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.race-table th {
+  background: rgba(14, 25, 45, 0.95);
+  font-family: var(--font-race);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-yellow);
+  padding: 14px 16px;
+  border-bottom: 2px solid rgba(255, 230, 0, 0.3);
+}
+
+.race-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.95rem;
+  color: var(--text-white);
+  vertical-align: middle;
+}
+
+.race-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.race-table tbody tr:hover {
+  background: rgba(0, 102, 255, 0.1);
+}
+
+.race-table tbody tr.new-entry {
+  animation: highlight-row 2s ease-out;
+}
+
+@keyframes highlight-row {
+  0% { background: rgba(255, 230, 0, 0.4); }
+  100% { background: transparent; }
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-family: var(--font-race);
+  font-size: 1rem;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFF;
+}
+
+.rank-badge.top-1 { background: #FFD700; color: #000; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+.rank-badge.top-2 { background: #C0C0C0; color: #000; }
+.rank-badge.top-3 { background: #CD7F32; color: #000; }
+
+.table-time-cell {
+  font-family: var(--font-race);
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--accent-yellow);
+  letter-spacing: 0.5px;
+}
+
+/* Acciones de Admin (Exportar, Limpiar, Filtros) */
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.search-box-admin {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-box-admin input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  background: rgba(10, 19, 34, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #FFF;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.search-box-admin input:focus {
+  border-color: var(--accent-yellow);
+}
+
+.search-box-admin .icon-search {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.btn-admin-action {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: var(--font-race);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-export-excel {
+  background: #107C41;
+  color: #FFF;
+  box-shadow: 0 4px 12px rgba(16, 124, 65, 0.4);
+}
+
+.btn-export-excel:hover {
+  background: #138d4b;
+  transform: translateY(-1px);
+}
+
+.btn-clear-db {
+  background: rgba(255, 51, 75, 0.15);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.btn-clear-db:hover {
+  background: var(--danger-color);
+  color: #FFF;
+}
+
+/* ==========================================================================
+   MODAL / POPUPS
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 2px solid var(--accent-yellow);
+  border-radius: 18px;
+  max-width: 480px;
+  width: 100%;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 30px var(--accent-yellow-glow);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Móvil / Tablet / Pantalla de Stand)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .header-container {
+    padding: 10px 14px;
+  }
+  .school-logo-img {
+    height: 42px;
+  }
+  .brand-main-title {
+    font-size: 1.3rem;
+  }
+  .brand-sub-title {
+    font-size: 0.65rem;
+  }
+  .f1-lights-gantry {
+    gap: 8px;
+    padding: 16px 12px;
+  }
+  .f1-bulb {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+  .f1-light-column {
+    padding: 6px;
+    gap: 8px;
+  }
+  .reaction-touch-zone {
+    min-height: 200px;
+  }
+  .telemetry-row {
+    grid-template-columns: 1fr;
+  }
+  .results-actions {
+    flex-direction: column;
+  }
+}

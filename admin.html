@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Control en Vivo | Leaderboard TV Stand</title>
+  <meta name="description" content="Panel de administración en vivo y pantalla de podio para el stand de Capacidad de Percepción.">
+
+  <!-- Estilos y Tipografías -->
+  <link rel="stylesheet" href="css/racing.css">
+  <link rel="shortcut icon" href="assets/logo.png" type="image/png">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER ADMIN / TV STAND
+       ========================================================================== -->
+  <header class="race-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <img src="assets/logo.png" alt="Logo Escuela CFL 412" class="school-logo-img" onerror="this.style.display='none'">
+        <div class="brand-titles">
+          <h1 class="brand-main-title">PANEL DE <span>CONTROL</span></h1>
+          <span class="brand-sub-title">LEADERBOARD EN VIVO & GESTIÓN DE PARTICIPANTES</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Notificación dinámica de nuevo ingreso -->
+        <div id="live-feed-notice" class="tag-live" style="display: none; background: rgba(0, 230, 118, 0.2); border-color: var(--success-color); color: var(--success-color);">
+          ¡Nuevo tiempo registrado!
+        </div>
+
+        <div class="tag-live">PANTALLA STAND EN VIVO</div>
+
+        <!-- Botón de Pantalla Completa (TV Stand) -->
+        <button type="button" class="btn-nav" id="btn-fullscreen-toggle" title="Alternar Pantalla Completa (Ideal para TV)">
+          <span>PANTALLA COMPLETA</span>
+          <span>⛶</span>
+        </button>
+
+        <!-- Volver a pantalla de participantes -->
+        <a href="index.html" class="btn-nav" title="Abrir Test de Reacción">
+          <span>IR AL TEST</span>
+          <span>🏎️</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL: TELEMETRÍA Y LEADERBOARD
+       ========================================================================== -->
+  <main class="main-wrapper" style="max-width: 1240px;">
+
+    <!-- FILA DE MÉTRICAS GLOBALES DEL STAND -->
+    <section class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-title">TOTAL PARTICIPANTES</div>
+        <div class="metric-value" id="metric-total-participants">0</div>
+        <div class="metric-sub">Registrados hoy en el stand</div>
+      </div>
+
+      <div class="metric-card" style="border-color: rgba(255, 215, 0, 0.4);">
+        <div class="metric-title" style="color: #FFD700;">RÉCORD DEL DÍA 🏆</div>
+        <div class="metric-value" id="metric-best-time" style="color: #FFD700;">-- ms</div>
+        <div class="metric-sub" id="metric-best-holder">Sin registros aún</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-title">TIEMPO PROMEDIO</div>
+        <div class="metric-value" id="metric-avg-time">-- ms</div>
+        <div class="metric-sub">Velocidad media de reacción</div>
+      </div>
+    </section>
+
+    <!-- CUADRÍCULA: PODIO F1 + TABLA EN VIVO -->
+    <div class="admin-grid">
+
+      <!-- COLUMNA IZQUIERDA: PODIO F1 (TOP 3) -->
+      <aside class="screen-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div class="hero-banner" style="margin-bottom: 12px; text-align: left;">
+            <div class="racing-badge-strip">PODIO DE CAMPEONES</div>
+            <h2 class="hero-title" style="font-size: 1.8rem;">TOP 3 <span>REFLEJOS</span></h2>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+            Los participantes con menor tiempo de reacción acumulados en la jornada.
+          </p>
+
+          <!-- Estructura del Podio -->
+          <div class="podium-container">
+            <!-- 2do Lugar (Plata) -->
+            <div class="podium-step silver">
+              <div class="podium-avatar">🥈</div>
+              <div class="podium-pillar">
+                <div class="podium-player-name" id="podium-p2-name">---</div>
+                <div class="podium-player-time" id="podium-p2-time">-- ms</div>
+                <div class="podium-rank-num">2</div>
+              </div>
+            </div>
+
+            <!-- 1er Lugar (Oro) -->
+            <div class="podium-step gold">
+              <div class="podium-avatar">👑</div>
+              <div class="podium-pillar">
+                <div class="podium-player-name" id="podium-p1-name">---</div>
+                <div class="podium-player-time" id="podium-p1-time">-- ms</div>
+                <div class="podium-rank-num">1</div>
+              </div>
+            </div>
+
+            <!-- 3er Lugar (Bronce) -->
+            <div class="podium-step bronze">
+              <div class="podium-avatar">🥉</div>
+              <div class="podium-pillar">
+                <div class="podium-player-name" id="podium-p3-name">---</div>
+                <div class="podium-player-time" id="podium-p3-time">-- ms</div>
+                <div class="podium-rank-num">3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Utilidad Rápida -->
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+          <button type="button" id="btn-add-demo-data" class="btn-admin-action" style="background: rgba(0, 102, 255, 0.15); color: var(--racing-cyan); border: 1px solid var(--racing-blue);">
+            <span>🎲</span>
+            <span>Cargar datos de prueba</span>
+          </button>
+          <button type="button" id="btn-clear-database" class="btn-admin-action btn-clear-db">
+            <span>🗑️</span>
+            <span>Reiniciar todos los registros</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- COLUMNA DERECHA: TABLA EN VIVO Y EXPORTACIÓN -->
+      <section class="screen-card">
+        <!-- Barra de herramientas de Admin -->
+        <div class="admin-toolbar">
+          <!-- Buscador -->
+          <div class="search-box-admin">
+            <span class="icon-search">🔍</span>
+            <input type="text" id="admin-search-input" placeholder="Buscar por nombre o email...">
+          </div>
+
+          <!-- Botón de Exportar a Excel (CSV) -->
+          <button type="button" id="btn-export-csv" class="btn-admin-action btn-export-excel">
+            <span>📥</span>
+            <span>EXPORTAR A EXCEL (CSV)</span>
+          </button>
+        </div>
+
+        <!-- Tabla de Clasificación -->
+        <div class="table-responsive">
+          <table class="race-table" id="leaderboard-table">
+            <thead>
+              <tr>
+                <th>POS</th>
+                <th>PILOTO / HORA</th>
+                <th>CORREO ELECTRÓNICO</th>
+                <th>TIEMPO</th>
+                <th>CATEGORÍA</th>
+                <th style="text-align: right;">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <!-- Renderizado dinámico vía js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/admin.js"></script>
+
+  <!-- Script para Fullscreen -->
+  <script>
+    const btnFs = document.getElementById('btn-fullscreen-toggle');
+    if (btnFs) {
+      btnFs.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.warn('Error al solicitar pantalla completa:', err);
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      });
+    }
+  </script>
+</body>
+</html>
