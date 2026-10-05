@@ -140,6 +140,15 @@
       <section class="screen-card">
         <!-- Barra de herramientas de Admin -->
         <div class="admin-toolbar">
+          <!-- Filtro por Nivel -->
+          <div style="min-width: 170px;">
+            <select id="admin-level-filter" style="width: 100%; padding: 10px 12px; background: rgba(10, 19, 34, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #FFF; font-family: var(--font-race); font-size: 1rem; font-weight: 700; outline: none; cursor: pointer;">
+              <option value="ALL">🏁 Todos los Niveles</option>
+              <option value="Semáforo F1">🚦 Nivel 1: Semáforo F1</option>
+              <option value="Solo Colores">🎨 Nivel 2: Solo Colores</option>
+            </select>
+          </div>
+
           <!-- Buscador -->
           <div class="search-box-admin">
             <span class="icon-search">🔍</span>
@@ -159,6 +168,7 @@
             <thead>
               <tr>
                 <th>POS</th>
+                <th>NIVEL</th>
                 <th>PILOTO / HORA</th>
                 <th>CORREO ELECTRÓNICO</th>
                 <th>TIEMPO</th>

@@ -18,9 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const podiumP3Name = document.getElementById('podium-p3-name');
   const podiumP3Time = document.getElementById('podium-p3-time');
 
-  // Tabla y Búsqueda
+  // Elementos de búsqueda y filtro
   const leaderboardBody = document.getElementById('leaderboard-tbody');
   const inputSearch = document.getElementById('admin-search-input');
+  const selectLevelFilter = document.getElementById('admin-level-filter');
   const btnExport = document.getElementById('btn-export-csv');
   const btnClearAll = document.getElementById('btn-clear-database');
   const btnAddDemo = document.getElementById('btn-add-demo-data');
@@ -39,21 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Suscribirse a cambios en tiempo real
   window.racingStorage.subscribe((payload) => {
-    // Si entra un nuevo registro
     if (payload.type === 'NEW_RECORD') {
       currentRecords = payload.allRecords || window.racingStorage.getAll();
       renderAll(payload.record.id);
 
-      // Feedback visual
       if (liveNoticeBadge) {
         liveNoticeBadge.style.display = 'inline-flex';
-        liveNoticeBadge.textContent = `¡Nuevo tiempo registrado: ${payload.record.name} (${payload.record.timeMs}ms)!`;
+        liveNoticeBadge.textContent = `¡Nuevo tiempo (${payload.record.level || 'F1'}): ${payload.record.name} (${payload.record.timeMs}ms)!`;
         setTimeout(() => {
           liveNoticeBadge.style.display = 'none';
         }, 5000);
       }
 
-      // Sonido de feedback si el audio está activo
       adminAudio.playTouchHit();
     } else {
       currentRecords = window.racingStorage.getAll();
@@ -68,33 +66,45 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable(highlightId);
   }
 
+  function getFilteredRecords() {
+    const selectedLevel = selectLevelFilter ? selectLevelFilter.value : 'ALL';
+    let filtered = [...currentRecords];
+
+    if (selectedLevel !== 'ALL') {
+      filtered = filtered.filter(r => (r.level || 'Semáforo F1') === selectedLevel);
+    }
+    return filtered;
+  }
+
   // Actualizar métricas del Stand
   function updateMetrics() {
-    const total = currentRecords.length;
+    const filtered = getFilteredRecords();
+    const total = filtered.length;
     metricTotal.textContent = total;
 
     if (total === 0) {
       metricBest.textContent = '-- ms';
-      metricBestHolder.textContent = 'Sin registros aún';
+      metricBestHolder.textContent = 'Sin registros en este filtro';
       metricAvg.textContent = '-- ms';
       return;
     }
 
     // Mejor tiempo
-    const sorted = [...currentRecords].sort((a, b) => a.timeMs - b.timeMs);
+    const sorted = [...filtered].sort((a, b) => a.timeMs - b.timeMs);
     const bestRecord = sorted[0];
     metricBest.textContent = `${bestRecord.timeMs} ms`;
-    metricBestHolder.textContent = `Líder: ${bestRecord.name}`;
+    metricBestHolder.textContent = `Líder: ${bestRecord.name} (${bestRecord.level || 'F1'})`;
 
     // Promedio
-    const sum = currentRecords.reduce((acc, curr) => acc + curr.timeMs, 0);
+    const sum = filtered.reduce((acc, curr) => acc + curr.timeMs, 0);
     const avg = Math.round(sum / total);
     metricAvg.textContent = `${avg} ms`;
   }
 
-  // Actualizar Podio F1
+  // Actualizar Podio
   function updatePodium() {
-    const sorted = [...currentRecords].sort((a, b) => a.timeMs - b.timeMs);
+    const filtered = getFilteredRecords();
+    const sorted = [...filtered].sort((a, b) => a.timeMs - b.timeMs);
 
     // 1er Puesto
     if (sorted[0]) {
@@ -127,9 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Renderizar Tabla
   function renderTable(highlightId = null) {
     const searchTerm = (inputSearch ? inputSearch.value : '').toLowerCase().trim();
-    
+    let records = getFilteredRecords();
+
     // Ordenar de mejor tiempo a peor tiempo
-    let sorted = [...currentRecords].sort((a, b) => a.timeMs - b.timeMs);
+    let sorted = [...records].sort((a, b) => a.timeMs - b.timeMs);
 
     if (searchTerm) {
       sorted = sorted.filter(r => 
@@ -141,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sorted.length === 0) {
       leaderboardBody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
-            ${searchTerm ? 'No se encontraron participantes que coincidan con la búsqueda.' : 'No hay participantes registrados todavía. ¡Iniciá el test desde la pantalla principal!'}
+          <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+            ${searchTerm ? 'No se encontraron participantes que coincidan con la búsqueda.' : 'No hay participantes registrados en este filtro. ¡Iniciá el test desde la pantalla principal!'}
           </td>
         </tr>
       `;
@@ -161,11 +172,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const tierText = (item.rating && item.rating.tier) ? item.rating.tier : 'Participante';
       const tierBadge = (item.rating && item.rating.classBadge) ? item.rating.classBadge : 'rank-normal';
+      const levelLabel = item.level === 'Solo Colores' ? '🎨 Colores' : '🚦 F1';
 
       return `
         <tr class="${isNew}" data-id="${item.id}">
-          <td style="width: 60px;">
+          <td style="width: 50px;">
             <span class="rank-badge ${badgeClass}">${pos}</span>
+          </td>
+          <td style="width: 110px;">
+            <span class="tag-live" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 6px;">
+              ${levelLabel}
+            </span>
           </td>
           <td>
             <div style="font-weight: 700; color: #FFF; font-size: 1.05rem;">${escapeHtml(item.name)}</div>
@@ -189,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }).join('');
 
-    // Listener para botones de eliminar fila
+    // Listener para eliminar fila
     document.querySelectorAll('.btn-delete-row').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
@@ -197,6 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
           window.racingStorage.deleteById(id);
         }
       });
+    });
+  }
+
+  // Filtro por Nivel
+  if (selectLevelFilter) {
+    selectLevelFilter.addEventListener('change', () => {
+      renderAll();
     });
   }
 
@@ -224,21 +248,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Cargar datos de demostración
+  // Cargar datos de demostración con ambos niveles
   if (btnAddDemo) {
     btnAddDemo.addEventListener('click', () => {
       const demoUsers = [
-        { name: 'Lucas Benítez', email: 'lucas.b@gmail.com', timeMs: 204 },
-        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', timeMs: 238 },
-        { name: 'Martín Rossi', email: 'mrossi@outlook.com', timeMs: 265 },
-        { name: 'Camila Torres', email: 'cami.torres@gmail.com', timeMs: 310 },
-        { name: 'Alejandro Morales', email: 'amorales@yahoo.com.ar', timeMs: 345 }
+        { name: 'Lucas Benítez', email: 'lucas.b@gmail.com', level: 'Semáforo F1', timeMs: 204 },
+        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', level: 'Solo Colores', timeMs: 218 },
+        { name: 'Martín Rossi', email: 'mrossi@outlook.com', level: 'Semáforo F1', timeMs: 245 },
+        { name: 'Camila Torres', email: 'cami.torres@gmail.com', level: 'Solo Colores', timeMs: 270 },
+        { name: 'Alejandro Morales', email: 'amorales@yahoo.com.ar', level: 'Semáforo F1', timeMs: 320 }
       ];
 
       demoUsers.forEach(u => {
         window.racingStorage.saveParticipant(u);
       });
-      alert('5 participantes de prueba agregados exitosamente para calibrar la pantalla.');
+      alert('5 participantes de prueba (F1 y Colores) agregados exitosamente.');
     });
   }
 

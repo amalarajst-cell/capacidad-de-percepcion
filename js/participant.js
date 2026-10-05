@@ -1,6 +1,8 @@
 /**
  * PARTICIPANT REACTION TEST CONTROLLER
- * Máquina de estados para semáforo F1 y registro en stand
+ * Máquina de estados para:
+ * - Nivel 1: Semáforo F1 (5 Luces de Largada)
+ * - Nivel 2: Solo Colores (Reflejos Cromáticos Sorpresa)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const screenLogin = document.getElementById('screen-login');
   const screenTest = document.getElementById('screen-test');
   const screenResults = document.getElementById('screen-results');
+
+  // Selector de Nivel
+  const btnSelectF1 = document.getElementById('btn-select-level-f1');
+  const btnSelectColors = document.getElementById('btn-select-level-colors');
+  const selectedLevelInput = document.getElementById('selected-level-input');
+  const activeLevelIndicator = document.getElementById('active-level-indicator');
+  const f1Gantry = document.getElementById('f1-gantry');
+  const colorStageContainer = document.getElementById('color-stage-container');
+  const colorOrb = document.getElementById('color-orb-display');
+  const colorOrbSymbol = document.getElementById('color-orb-symbol');
 
   // Formulario y campos
   const formLogin = document.getElementById('form-login');
@@ -29,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   // Resultados
+  const resultLevelBadge = document.getElementById('result-level-badge');
   const resultTimeNumber = document.getElementById('result-time-number');
   const resultBadge = document.getElementById('result-tier-badge');
   const resultRankIcon = document.getElementById('result-rank-icon');
@@ -39,12 +52,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const soundIcon = document.getElementById('sound-icon');
 
   // Estado del juego
+  let currentLevel = 'Semáforo F1'; // 'Semáforo F1' o 'Solo Colores'
   let currentPlayer = { name: '', email: '' };
   let gameState = 'IDLE'; // 'IDLE', 'COUNTDOWN', 'HOLDING', 'GO', 'JUMP_START', 'FINISHED'
   let startTime = 0;
   let reactionTime = 0;
   let countdownTimers = [];
   let holdingTimeout = null;
+
+  // Manejo de Selección de Nivel
+  if (btnSelectF1 && btnSelectColors) {
+    btnSelectF1.addEventListener('click', () => {
+      currentLevel = 'Semáforo F1';
+      selectedLevelInput.value = currentLevel;
+      btnSelectF1.classList.add('active');
+      btnSelectColors.classList.remove('active');
+    });
+
+    btnSelectColors.addEventListener('click', () => {
+      currentLevel = 'Solo Colores';
+      selectedLevelInput.value = currentLevel;
+      btnSelectColors.classList.add('active');
+      btnSelectF1.classList.remove('active');
+    });
+  }
 
   // Manejo de Sonido
   if (btnSoundToggle) {
@@ -68,41 +99,62 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    currentLevel = selectedLevelInput ? selectedLevelInput.value : 'Semáforo F1';
     currentPlayer = { name, email };
     activePlayerName.textContent = name;
+    if (activeLevelIndicator) {
+      activeLevelIndicator.textContent = `NIVEL: ${currentLevel.toUpperCase()}`;
+    }
+
+    // Configurar visibilidad según el nivel elegido
+    if (currentLevel === 'Solo Colores') {
+      if (f1Gantry) f1Gantry.style.display = 'none';
+      if (colorStageContainer) colorStageContainer.style.display = 'flex';
+    } else {
+      if (f1Gantry) f1Gantry.style.display = 'inline-flex';
+      if (colorStageContainer) colorStageContainer.style.display = 'none';
+    }
 
     // Cambiar a pantalla de Test
     screenLogin.style.display = 'none';
     screenResults.style.display = 'none';
     screenTest.style.display = 'block';
 
-    // Preparar el test
-    initTestCountdown();
+    // Iniciar test según nivel
+    startLevelTest();
   });
 
-  // 2. Iniciar la secuencia de luces de F1
-  function initTestCountdown() {
+  function startLevelTest() {
     clearAllTimers();
+
+    if (currentLevel === 'Solo Colores') {
+      initColorTest();
+    } else {
+      initF1Countdown();
+    }
+  }
+
+  // =========================================================================
+  // NIVEL 1: SEMÁFORO DE FÓRMULA 1
+  // =========================================================================
+  function initF1Countdown() {
     resetBulbs();
     gameState = 'COUNTDOWN';
 
-    // Actualizar UI
     reactionZone.className = 'reaction-touch-zone state-ready';
     touchIcon.textContent = '⏱️';
     touchTitle.textContent = 'PREPARATE...';
     touchSubtitle.textContent = 'Las 5 luces se van a encender. Apenas se apaguen todas, ¡tocá la pantalla!';
 
-    // Encender las 5 luces una por una cada 900ms
-    const intervalStep = 900;
+    const intervalStep = 850;
     for (let i = 0; i < 5; i++) {
       const timer = setTimeout(() => {
         if (gameState !== 'COUNTDOWN') return;
         turnOnBulb(i);
         window.racingAudio.playLightBeep(i + 1);
 
-        // Si es la última luz, pasar al estado de espera aleatoria (Holding)
         if (i === 4) {
-          startHoldingPhase();
+          startF1HoldingPhase();
         }
       }, (i + 1) * intervalStep);
 
@@ -122,32 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function clearAllTimers() {
-    countdownTimers.forEach(t => clearTimeout(t));
-    countdownTimers = [];
-    if (holdingTimeout) {
-      clearTimeout(holdingTimeout);
-      holdingTimeout = null;
-    }
-  }
-
-  // 3. Fase de Espera Aleatoria (Holding - como en la FIA)
-  function startHoldingPhase() {
+  function startF1HoldingPhase() {
     gameState = 'HOLDING';
     touchTitle.textContent = '¡ATENCIÓN!';
     touchSubtitle.textContent = 'Esperá a que se apaguen las luces... ¡No te anticipes!';
 
-    // Tiempo aleatorio entre 1.2s y 3.6s
-    const randomDelay = Math.floor(Math.random() * 2400) + 1200;
+    const randomDelay = Math.floor(Math.random() * 2200) + 1200;
 
     holdingTimeout = setTimeout(() => {
       if (gameState !== 'HOLDING') return;
-      triggerLightsOut();
+      triggerF1LightsOut();
     }, randomDelay);
   }
 
-  // 4. Luces Apagadas: ¡LARGADA / GO!
-  function triggerLightsOut() {
+  function triggerF1LightsOut() {
     gameState = 'GO';
     resetBulbs();
     startTime = performance.now();
@@ -157,27 +197,88 @@ document.addEventListener('DOMContentLoaded', () => {
     reactionZone.className = 'reaction-touch-zone state-go';
     touchIcon.textContent = '⚡';
     touchTitle.textContent = '¡¡TOCÁ AHORA!!';
-    touchSubtitle.textContent = '¡¡RÁPIDO, DALE!!';
+    touchSubtitle.textContent = '¡¡DALE RÁPIDO!!';
   }
 
-  // 5. Manejo del Toque del Participante
+  // =========================================================================
+  // NIVEL 2: TEST SOLO COLORES (ESTÍMULO CROMÁTICO SORPRESA)
+  // =========================================================================
+  function initColorTest() {
+    gameState = 'HOLDING';
+
+    // Establecer orbe en ROJO (Espera/Detención)
+    if (colorOrb) {
+      colorOrb.className = 'color-stage-orb color-red';
+      if (colorOrbSymbol) colorOrbSymbol.textContent = '🔴';
+    }
+
+    reactionZone.className = 'reaction-touch-zone state-ready';
+    touchIcon.textContent = '🎨';
+    touchTitle.textContent = 'ATENTO AL COLOR ROJO...';
+    touchSubtitle.textContent = '¡No toques todavía! Esperá a que cambie de color inesperadamente.';
+
+    window.racingAudio.playLightBeep(1);
+
+    // Retardo aleatorio de 1.4s a 3.6s
+    const randomDelay = Math.floor(Math.random() * 2200) + 1400;
+
+    holdingTimeout = setTimeout(() => {
+      if (gameState !== 'HOLDING') return;
+      triggerColorChange();
+    }, randomDelay);
+  }
+
+  function triggerColorChange() {
+    gameState = 'GO';
+
+    // Elegir aleatoriamente entre Verde Competición, Amarillo Eléctrico o Azul
+    const colors = [
+      { cls: 'color-green', symbol: '🟢', name: 'VERDE' },
+      { cls: 'color-yellow', symbol: '🟡', name: 'AMARILLO' },
+      { cls: 'color-blue', symbol: '🔵', name: 'AZUL' }
+    ];
+    const picked = colors[Math.floor(Math.random() * colors.length)];
+
+    if (colorOrb) {
+      colorOrb.className = `color-stage-orb ${picked.cls}`;
+      if (colorOrbSymbol) colorOrbSymbol.textContent = picked.symbol;
+    }
+
+    startTime = performance.now();
+    window.racingAudio.playStartLightsOut();
+
+    reactionZone.className = 'reaction-touch-zone state-go';
+    touchIcon.textContent = picked.symbol;
+    touchTitle.textContent = `¡¡CAMBIÓ A ${picked.name}!!`;
+    touchSubtitle.textContent = '¡¡TOCÁ LA PANTALLA YA!!';
+  }
+
+  // =========================================================================
+  // CONTROL DE TOQUE & MEDICIÓN
+  // =========================================================================
+  function clearAllTimers() {
+    countdownTimers.forEach(t => clearTimeout(t));
+    countdownTimers = [];
+    if (holdingTimeout) {
+      clearTimeout(holdingTimeout);
+      holdingTimeout = null;
+    }
+  }
+
   reactionZone.addEventListener('pointerdown', handleUserTouch);
 
   function handleUserTouch(e) {
     e.preventDefault();
 
     if (gameState === 'COUNTDOWN' || gameState === 'HOLDING') {
-      // Salida en falso / Jump Start
       handleJumpStart();
     } else if (gameState === 'GO') {
-      // Reacción Exitosa
       const endTime = performance.now();
       reactionTime = Math.round(endTime - startTime);
       handleReactionSuccess(reactionTime);
     }
   }
 
-  // Manejo de Salida en Falso (Jump Start)
   function handleJumpStart() {
     gameState = 'JUMP_START';
     clearAllTimers();
@@ -188,32 +289,33 @@ document.addEventListener('DOMContentLoaded', () => {
     reactionZone.className = 'reaction-touch-zone state-jumpstart';
     touchIcon.textContent = '🚨';
     touchTitle.textContent = '¡SALIDA EN FALSO!';
-    touchSubtitle.textContent = 'Te anticipaste antes de que se apaguen las luces. Tocá para reintentar.';
+    touchSubtitle.textContent = currentLevel === 'Solo Colores'
+      ? '¡Tocaste antes de que cambie de color! Tenés que esperar.'
+      : 'Te anticipaste antes de que se apaguen las luces.';
 
-    // Permitir reiniciar el intento tras 1.5s
     setTimeout(() => {
       if (gameState === 'JUMP_START') {
-        touchTitle.textContent = 'TOCÁ PARA REINICIAR';
-        touchSubtitle.textContent = 'Mantené la calma y esperá a que las luces se apaguen.';
+        touchTitle.textContent = 'TOCÁ PARA REINTENTAR';
+        touchSubtitle.textContent = 'Mantené la calma y esperá la señal.';
         const oneTimeRestart = () => {
           reactionZone.removeEventListener('click', oneTimeRestart);
-          initTestCountdown();
+          startLevelTest();
         };
         reactionZone.addEventListener('click', oneTimeRestart, { once: true });
       }
     }, 1200);
   }
 
-  // Reacción Exitosa y Cálculo de Telemetría
   function handleReactionSuccess(timeMs) {
     gameState = 'FINISHED';
     window.racingAudio.playTouchHit();
 
-    // Guardar en Storage y sincronizar con Admin en vivo
+    // Guardar en Storage con el nivel correspondiente
     const rating = window.racingStorage.calculateRating(timeMs);
-    const savedEntry = window.racingStorage.saveParticipant({
+    window.racingStorage.saveParticipant({
       name: currentPlayer.name,
       email: currentPlayer.email,
+      level: currentLevel,
       timeMs: timeMs,
       rating: rating
     });
@@ -222,37 +324,36 @@ document.addEventListener('DOMContentLoaded', () => {
       window.racingAudio.playFanfare();
     }
 
-    // Pasar a pantalla de resultados
     setTimeout(() => {
       showResults(timeMs, rating);
     }, 400);
   }
 
-  // Mostrar Pantalla de Resultados
   function showResults(timeMs, rating) {
     screenTest.style.display = 'none';
     screenResults.style.display = 'block';
 
-    // Rellenar métricas
+    if (resultLevelBadge) {
+      resultLevelBadge.textContent = currentLevel.toUpperCase();
+    }
     resultTimeNumber.textContent = timeMs;
     resultBadge.className = `result-badge ${rating.classBadge}`;
     resultRankIcon.textContent = rating.icon;
     resultRankText.textContent = rating.tier;
 
-    // Métricas complementarias
     document.getElementById('telemetry-player-name').textContent = currentPlayer.name;
     document.getElementById('telemetry-verstappen-diff').textContent = (timeMs <= 200) ? '¡Superaste a un piloto F1!' : `+${timeMs - 200} ms`;
     document.getElementById('telemetry-speed-rank').textContent = timeMs < 280 ? 'Élite' : (timeMs < 380 ? 'Avanzado' : 'Normal');
   }
 
-  // Botón: Reintentar con el mismo participante
+  // Botón: Reintentar
   btnRetry.addEventListener('click', () => {
     screenResults.style.display = 'none';
     screenTest.style.display = 'block';
-    initTestCountdown();
+    startLevelTest();
   });
 
-  // Botón: Siguiente Participante (limpia y vuelve a pantalla de registro)
+  // Botón: Siguiente Participante
   btnNextPlayer.addEventListener('click', () => {
     inputName.value = '';
     inputEmail.value = '';

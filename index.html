@@ -63,6 +63,33 @@
       </div>
 
       <form id="form-login" class="login-form">
+        <!-- Selector de Nivel / Desafío -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>SELECCIONÁ EL NIVEL DE DESAFÍO</span>
+            <span class="req">* Elegí uno</span>
+          </label>
+          <div class="level-selector-grid">
+            <button type="button" class="level-card-btn active" id="btn-select-level-f1" data-level="Semáforo F1">
+              <div class="level-icon">🚦</div>
+              <div class="level-info">
+                <span class="level-badge-tag">NIVEL 1</span>
+                <span class="level-title-text">SEMÁFORO F1</span>
+                <span class="level-desc-text">5 luces de largada Red Bull</span>
+              </div>
+            </button>
+            <button type="button" class="level-card-btn" id="btn-select-level-colors" data-level="Solo Colores">
+              <div class="level-icon">🎨</div>
+              <div class="level-info">
+                <span class="level-badge-tag">NIVEL 2</span>
+                <span class="level-title-text">SOLO COLORES</span>
+                <span class="level-desc-text">Estímulo cromático sorpresa</span>
+              </div>
+            </button>
+          </div>
+          <input type="hidden" id="selected-level-input" value="Semáforo F1">
+        </div>
+
         <!-- Campo: Nombre y Apellido -->
         <div class="form-group">
           <label class="form-label" for="input-player-name">
@@ -114,21 +141,21 @@
       <div class="stand-rules-grid">
         <div class="rule-box">
           <div class="rule-num">01</div>
-          <div class="rule-text">Mirá el semáforo: las 5 luces rojas se van a encender una a una.</div>
+          <div class="rule-text" id="rule-desc-1">F1: Las 5 luces rojas se encienden una a una. / Colores: Atento al cambio cromático.</div>
         </div>
         <div class="rule-box">
           <div class="rule-num">02</div>
-          <div class="rule-text"><strong>¡NO TE ANTICIPES!</strong> Si tocás antes de que se apaguen, será salida en falso.</div>
+          <div class="rule-text"><strong>¡NO TE ANTICIPES!</strong> Si tocás antes de tiempo, es penalización por salida en falso.</div>
         </div>
         <div class="rule-box">
           <div class="rule-num">03</div>
-          <div class="rule-text">Apenas se apaguen las luces, <strong>¡tocá la pantalla a máxima velocidad!</strong></div>
+          <div class="rule-text">Apenas se apaguen las luces o cambie el color, <strong>¡tocá la pantalla a máxima velocidad!</strong></div>
         </div>
       </div>
     </section>
 
     <!-- -----------------------------------------------------------------------
-         PANTALLA 2: TEST DE REACCIÓN CON SEMÁFORO DE F1
+         PANTALLA 2: TEST DE REACCIÓN (F1 O COLORES)
          ----------------------------------------------------------------------- -->
     <section id="screen-test" class="screen-card test-section" style="display: none;">
       <!-- Barra de piloto activo -->
@@ -137,30 +164,28 @@
           <span class="label">PILOTO EN PISTA:</span>
           <span class="name" id="active-player-name">Participante</span>
         </div>
-        <div class="tag-live">MEDICIÓN ACTIVA</div>
+        <div class="tag-live" id="active-level-indicator">NIVEL: SEMÁFORO F1</div>
       </div>
 
-      <!-- Semáforo Gantry de 5 Luces de F1 -->
+      <!-- MODO 1: Semáforo Gantry de 5 Luces de F1 -->
       <div class="f1-lights-gantry" id="f1-gantry" aria-label="Semáforo de Largada">
-        <!-- Luz 1 -->
-        <div class="f1-light-column">
-          <div class="f1-bulb" id="bulb-1"></div>
+        <div class="f1-light-column"><div class="f1-bulb" id="bulb-1"></div></div>
+        <div class="f1-light-column"><div class="f1-bulb" id="bulb-2"></div></div>
+        <div class="f1-light-column"><div class="f1-bulb" id="bulb-3"></div></div>
+        <div class="f1-light-column"><div class="f1-bulb" id="bulb-4"></div></div>
+        <div class="f1-light-column"><div class="f1-bulb" id="bulb-5"></div></div>
+      </div>
+
+      <!-- MODO 2: Visor Cromático (Solo Colores) -->
+      <div class="color-viewport-wrap" id="color-stage-container" style="display: none;">
+        <div class="color-cue-bar">
+          <div class="color-cue-dot dot-red active" id="cue-red"></div>
+          <div class="color-cue-dot dot-yellow" id="cue-yellow"></div>
+          <div class="color-cue-dot dot-green" id="cue-green"></div>
+          <div class="color-cue-dot dot-blue" id="cue-blue"></div>
         </div>
-        <!-- Luz 2 -->
-        <div class="f1-light-column">
-          <div class="f1-bulb" id="bulb-2"></div>
-        </div>
-        <!-- Luz 3 -->
-        <div class="f1-light-column">
-          <div class="f1-bulb" id="bulb-3"></div>
-        </div>
-        <!-- Luz 4 -->
-        <div class="f1-light-column">
-          <div class="f1-bulb" id="bulb-4"></div>
-        </div>
-        <!-- Luz 5 -->
-        <div class="f1-light-column">
-          <div class="f1-bulb" id="bulb-5"></div>
+        <div class="color-stage-orb color-red" id="color-orb-display">
+          <span id="color-orb-symbol">🔴</span>
         </div>
       </div>
 
@@ -179,6 +204,9 @@
          ----------------------------------------------------------------------- -->
     <section id="screen-results" class="screen-card results-card" style="display: none;">
       <div class="hero-banner" style="margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 8px;">
+          <span class="racing-badge-strip" id="result-level-badge">SEMÁFORO F1</span>
+        </div>
         <div id="result-tier-badge" class="result-badge rank-f1">
           <span id="result-rank-icon">🏆</span>
           <span id="result-rank-text">Piloto F1 Élite</span>

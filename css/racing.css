@@ -248,9 +248,175 @@ html, body {
   background: linear-gradient(90deg, var(--racing-blue) 0%, var(--accent-yellow) 50%, var(--racing-blue) 100%);
 }
 
-/* ==========================================================================
-   REGISTRO / LOGIN DEL PARTICIPANTE
-   ========================================================================== */
+/* Selector de Niveles (F1 vs Colores) */
+.level-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.level-card-btn {
+  background: rgba(10, 19, 34, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  color: var(--text-white);
+}
+
+.level-card-btn:hover {
+  background: rgba(16, 32, 58, 0.85);
+  border-color: rgba(255, 230, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.level-card-btn.active {
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.25) 0%, rgba(14, 25, 45, 0.95) 100%);
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 20px var(--accent-yellow-glow);
+}
+
+.level-icon {
+  font-size: 2.2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.level-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.level-badge-tag {
+  font-family: var(--font-race);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-yellow);
+}
+
+.level-title-text {
+  font-family: var(--font-race);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #FFF;
+}
+
+.level-desc-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* NIVEL 2: ZONA CROMÁTICA (SOLO COLORES) */
+.color-viewport-wrap {
+  width: 100%;
+  max-width: 580px;
+  margin: 10px 0 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.color-stage-orb {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: #111a28;
+  border: 6px solid #202e42;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  transition: all 0.1s ease;
+  position: relative;
+}
+
+.color-stage-orb::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  animation: rotate-orb 15s linear infinite;
+}
+
+@keyframes rotate-orb {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.color-stage-orb.color-red {
+  background: #FF1A1A;
+  border-color: #FFA5A5;
+  box-shadow: 0 0 50px rgba(255, 26, 26, 0.9), inset 0 0 25px #FFFFFF;
+}
+
+.color-stage-orb.color-green {
+  background: #00FF66;
+  border-color: #AAFFCC;
+  box-shadow: 0 0 60px rgba(0, 255, 102, 0.95), inset 0 0 25px #FFFFFF;
+  animation: pulse-green-orb 0.25s infinite alternate;
+}
+
+@keyframes pulse-green-orb {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+.color-stage-orb.color-yellow {
+  background: #FFE600;
+  border-color: #FFF;
+  box-shadow: 0 0 60px rgba(255, 230, 0, 0.95), inset 0 0 25px #FFFFFF;
+}
+
+.color-stage-orb.color-blue {
+  background: #0066FF;
+  border-color: #80B3FF;
+  box-shadow: 0 0 60px rgba(0, 102, 255, 0.95), inset 0 0 25px #FFFFFF;
+}
+
+.color-cue-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.color-cue-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.color-cue-dot.dot-red { background: #FF1A1A; }
+.color-cue-dot.dot-yellow { background: #FFE600; }
+.color-cue-dot.dot-green { background: #00FF66; }
+.color-cue-dot.dot-blue { background: #0066FF; }
+
+.color-cue-dot.active {
+  opacity: 1;
+  transform: scale(1.4);
+  box-shadow: 0 0 12px currentColor;
+}
+
 .hero-banner {
   text-align: center;
   margin-bottom: 28px;
