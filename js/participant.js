@@ -416,8 +416,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 8. Soporte para Teclado (1/R, 2/A, 3/V, 4/Z, Barra Espaciadora / Enter)
+  // 8. Soporte para Teclado y Atajo Secreto de Administración (Ctrl + Alt + A)
   window.addEventListener('keydown', (e) => {
+    // Atajo Secreto para Administrador: Ctrl + Alt + A
+    if (e.ctrlKey && e.altKey && (e.key === 'a' || e.key === 'A')) {
+      e.preventDefault();
+      const adminWindow = window.open('admin.html', '_blank');
+      if (!adminWindow) {
+        window.location.href = 'admin.html';
+      }
+      return;
+    }
+
     // Si el usuario está escribiendo en un input, ignorar atajos del juego
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
       return;

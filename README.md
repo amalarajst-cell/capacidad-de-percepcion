@@ -35,6 +35,7 @@ El participante ingresa su **Nombre y Apellido** y su **Correo Electrónico**, e
 
 ## 📊 Panel de Administración & Leaderboard en Vivo (`admin.html`)
 
+- **Acceso Administrativo Discreto:** Desde la pantalla del participante, podés acceder en cualquier momento al panel de control presionando **`Control + Alt + A`**.
 - **Impacto en Tiempo Real:** Los tiempos impactan instantáneamente al completarse el test.
 - **Podio Top 3:** Puestos de Oro, Plata y Bronce con nombres y tiempos en vivo.
 - **Filtro por Modalidad:** Permite ver el ranking general de todos los niveles o filtrar solo por *Semáforo F1* o *Solo Colores*.
