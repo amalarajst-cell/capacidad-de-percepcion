@@ -19,6 +19,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputEmail = document.getElementById('input-player-email');
   const activePlayerName = document.getElementById('active-player-name');
   const activeLevelIndicator = document.getElementById('active-level-indicator');
+  const playerRoleLabel = document.getElementById('player-role-label');
+  const telemetryDriverLabel = document.getElementById('telemetry-driver-label');
+
+  // Detección de género basada en el primer nombre (Conductor vs Conductora)
+  function detectDriverGender(fullName) {
+    if (!fullName) return 'M';
+    const firstName = fullName.trim().split(/\s+/)[0].toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Excepciones masculinas que terminan en 'a' o 'as'
+    const masculineExceptions = new Set([
+      'luca', 'lucas', 'bautista', 'sasha', 'matias', 'nicolas', 'elias', 'jonas',
+      'tomas', 'isaias', 'jeremias', 'josue', 'tobias', 'borja', 'noa', 'noah',
+      'ezra', 'dakota'
+    ]);
+
+    // Nombres femeninos frecuentes que no terminan en 'a'
+    const feminineNames = new Set([
+      'carmen', 'pilar', 'mercedes', 'belen', 'ines', 'rocio', 'sol', 'luz',
+      'abril', 'guadalupe', 'rosario', 'concepcion', 'dolores', 'soledad',
+      'mar', 'noemi', 'iris', 'ruth', 'esther', 'miriam', 'yanet', 'anet',
+      'karen', 'sharon', 'ayelen', 'maiten', 'guillermina', 'yasmin', 'jazmin',
+      'astrid', 'berenice', 'gladys', 'beatriz', 'haydee', 'nerea', 'zoe',
+      'chloe', 'monse', 'monserrat', 'cleo', 'fabi', 'dani', 'angeles', 'nieves',
+      'reyes', 'meri', 'eli', 'vivi', 'gaby', 'maby', 'nati', 'silvi', 'ana'
+    ]);
+
+    if (feminineNames.has(firstName)) return 'F';
+    if (masculineExceptions.has(firstName)) return 'M';
+    if (firstName.endsWith('a') || firstName.endsWith('ia') || firstName.endsWith('na') || firstName.endsWith('ela') || firstName.endsWith('ina')) {
+      return 'F';
+    }
+    return 'M';
+  }
 
   // Elementos de la Tarjeta Cromática Principal
   const chromaticCard = document.querySelector('.chromatic-stage-card');
@@ -94,6 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentPlayer = { name, email };
     activePlayerName.textContent = name;
+
+    const gender = detectDriverGender(name);
+    const roleUpper = gender === 'F' ? 'CONDUCTORA EN PISTA:' : 'CONDUCTOR EN PISTA:';
+    const roleTitle = gender === 'F' ? 'Conductora' : 'Conductor';
+
+    if (playerRoleLabel) {
+      playerRoleLabel.textContent = roleUpper;
+    }
+    if (telemetryDriverLabel) {
+      telemetryDriverLabel.textContent = roleTitle;
+    }
+
     if (activeLevelIndicator) {
       activeLevelIndicator.textContent = 'REFLEJOS CROMÁTICOS';
     }
@@ -380,11 +426,15 @@ document.addEventListener('DOMContentLoaded', () => {
       resultRankText.textContent = rating.tier;
     }
 
+    if (telemetryDriverLabel) {
+      const gender = detectDriverGender(currentPlayer.name);
+      telemetryDriverLabel.textContent = gender === 'F' ? 'Conductora' : 'Conductor';
+    }
     if (telemetryPlayerName) {
       telemetryPlayerName.textContent = currentPlayer.name;
     }
     if (telemetryDiff) {
-      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste a un piloto F1!' : `+${timeMs - 200} ms`;
+      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste el récord!' : `+${timeMs - 200} ms`;
     }
     if (telemetrySpeedRank) {
       telemetrySpeedRank.textContent = timeMs < 250 ? 'Sobrenatural' : (timeMs < 350 ? 'Avanzado' : 'Normal');
