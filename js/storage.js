@@ -67,7 +67,7 @@ class RacingStorageManager {
       id: 'REC_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name: record.name.trim(),
       email: record.email.trim().toLowerCase(),
-      level: record.level || 'Semáforo F1',
+      level: record.level || 'Reacción a Colores',
       timeMs: Math.round(record.timeMs),
       rating: record.rating || this.calculateRating(record.timeMs),
       createdAt: new Date().toISOString(),

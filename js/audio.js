@@ -159,6 +159,33 @@ class RacingAudioEngine {
       }, idx * 120);
     });
   }
+
+  /* Sonido de Color Incorrecto */
+  playWrongColorAlert() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+      osc.frequency.setValueAtTime(160, this.ctx.currentTime + 0.12);
+
+      gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.28);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.28);
+    } catch (e) {
+      console.warn('Audio play error', e);
+    }
+  }
 }
 
 // Instancia global accesible

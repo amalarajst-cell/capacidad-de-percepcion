@@ -1,12 +1,12 @@
-# 🏎️ Capacidad de Percepción - Test de Reacción F1 & Colores para Stand
+# 🏎️ Capacidad de Percepción - Test de Reacción a Colores para Stand
 
-Aplicación web interactiva de alta velocidad diseñada para stands en la vía pública o exposiciones educativas, con estética de alta energía tipo **Red Bull Racing / Fórmula 1** y los colores institucionales (**Azul Marino, Amarillo Competición y Blanco**).
+Aplicación web interactiva de alta velocidad diseñada para stands en la vía pública o exposiciones educativas, con estética de alta energía tipo **Motorsport / Dark Mode** y los colores institucionales (**Azul Marino, Amarillo Competición y Blanco**).
 
 ---
 
 ## 🌐 Enlaces en Vivo (GitHub Pages)
 
-- 🏎️ **App del Test de Reacción (Participantes):**  
+- 🎨 **App del Test de Reacción a Colores (Participantes):**  
   [https://amalarajst-cell.github.io/capacidad-de-percepcion/](https://amalarajst-cell.github.io/capacidad-de-percepcion/)
 
 - 📊 **Panel de Control & Leaderboard TV Stand (Admin):**  
@@ -17,20 +17,19 @@ Aplicación web interactiva de alta velocidad diseñada para stands en la vía p
 
 ---
 
-## 🎮 Niveles de Desafío Disponibles
+## 🎮 Modalidad Principal: Desafío de Reflejos Cromáticos
 
-El participante ingresa su **Nombre y Apellido** y su **Correo Electrónico**, y puede elegir entre dos modalidades:
+El participante ingresa su **Nombre y Apellido** y su **Correo Electrónico**, e ingresa directamente al desafío de discriminación y tiempo de reacción:
 
-### 🚦 Nivel 1: Semáforo F1 (Grid de Largada)
-- 5 columnas de luces rojas se encienden sucesivamente con beeps rítmicos.
-- Intervalo aleatorio de espera e impredecible (como la FIA en carreras de Gran Premio).
-- **Salida en Falso (*Jump Start*):** Si toca antes de que se apaguen las luces, se activa una alarma sonora y visual de penalización.
-- **¡Luces Apagadas!:** Las luces se apagan instantáneamente y se mide el tiempo de respuesta milimétrico.
-
-### 🎨 Nivel 2: Solo Colores (Reflejo Cromático Sorpresa)
-- Orbe visual central en color **Rojo 🔴** con aviso de detención y concentración.
-- **Detección Anti-Anticipación:** Si el participante toca mientras está en rojo, se detecta el toque prematuro.
-- **Cambio Cromático Explosivo:** En un lapso sorpresa, el orbe cambia instantáneamente a **Verde 🟢, Amarillo 🟡 o Azul 🔵** y la pantalla destella ordenando el toque inmediato.
+### 🎯 Dinámica de Juego:
+1. **Comenzar Nivel:** Al pulsar `▷ COMENZAR NIVEL` (o la barra espaciadora), el sistema entra en fase de espera y concentración.
+2. **Detección Anti-Anticipación:** Si el participante toca un botón o presiona una tecla antes de que aparezca el color, se activa una penalización sonora y visual por salida en falso.
+3. **Estímulo Cromático Sorpresa:** En un lapso aleatorio e impredecible (entre 1.4s y 3.4s), el orbe central se enciende intensamente con uno de los 4 colores al azar:
+   - 🔴 **ROJO** (Detención)
+   - 🟡 **AMARILLO** (Precaución)
+   - 🟢 **VERDE** (Avanzar)
+   - 🔵 **AZUL** (Información)
+4. **Métricas de Alta Precisión:** Se mide el tiempo de respuesta milimétrico (`ms`) del participante al presionar el color correcto. Si presiona el color incorrecto, el sistema avisa del error sonoro y visual para reintentar.
 
 ---
 

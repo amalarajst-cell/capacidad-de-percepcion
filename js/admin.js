@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filtered = [...currentRecords];
 
     if (selectedLevel !== 'ALL') {
-      filtered = filtered.filter(r => (r.level || 'Semáforo F1') === selectedLevel);
+      filtered = filtered.filter(r => (r.level || 'Reacción a Colores') === selectedLevel);
     }
     return filtered;
   }
@@ -252,17 +252,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnAddDemo) {
     btnAddDemo.addEventListener('click', () => {
       const demoUsers = [
-        { name: 'Lucas Benítez', email: 'lucas.b@gmail.com', level: 'Semáforo F1', timeMs: 204 },
-        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', level: 'Solo Colores', timeMs: 218 },
-        { name: 'Martín Rossi', email: 'mrossi@outlook.com', level: 'Semáforo F1', timeMs: 245 },
-        { name: 'Camila Torres', email: 'cami.torres@gmail.com', level: 'Solo Colores', timeMs: 270 },
-        { name: 'Alejandro Morales', email: 'amorales@yahoo.com.ar', level: 'Semáforo F1', timeMs: 320 }
+        { name: 'Lucas Benítez', email: 'lucas.b@gmail.com', level: 'Reacción a Colores', timeMs: 204 },
+        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', level: 'Reacción a Colores', timeMs: 218 },
+        { name: 'Martín Rossi', email: 'mrossi@outlook.com', level: 'Reacción a Colores', timeMs: 245 },
+        { name: 'Camila Torres', email: 'cami.torres@gmail.com', level: 'Reacción a Colores', timeMs: 270 },
+        { name: 'Alejandro Morales', email: 'amorales@yahoo.com.ar', level: 'Reacción a Colores', timeMs: 320 }
       ];
 
       demoUsers.forEach(u => {
         window.racingStorage.saveParticipant(u);
       });
-      alert('5 participantes de prueba (F1 y Colores) agregados exitosamente.');
+      alert('5 participantes de prueba agregados exitosamente.');
     });
   }
 

@@ -1,8 +1,10 @@
 /**
- * PARTICIPANT REACTION TEST CONTROLLER
- * Máquina de estados para:
- * - Nivel 1: Semáforo F1 (5 Luces de Largada)
- * - Nivel 2: Solo Colores (Reflejos Cromáticos Sorpresa)
+ * PARTICIPANT CHROMATIC REACTION CONTROLLER
+ * Desafío de tiempo de reacción a 4 colores sorpresa:
+ * - Rojo (Detención) - Tecla 1 / R
+ * - Amarillo (Precaución) - Tecla 2 / A
+ * - Verde (Avanzar) - Tecla 3 / V
+ * - Azul (Información) - Tecla 4 / Z
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,71 +13,62 @@ document.addEventListener('DOMContentLoaded', () => {
   const screenTest = document.getElementById('screen-test');
   const screenResults = document.getElementById('screen-results');
 
-  // Selector de Nivel
-  const btnSelectF1 = document.getElementById('btn-select-level-f1');
-  const btnSelectColors = document.getElementById('btn-select-level-colors');
-  const selectedLevelInput = document.getElementById('selected-level-input');
-  const activeLevelIndicator = document.getElementById('active-level-indicator');
-  const f1Gantry = document.getElementById('f1-gantry');
-  const colorStageContainer = document.getElementById('color-stage-container');
-  const colorOrb = document.getElementById('color-orb-display');
-  const colorOrbSymbol = document.getElementById('color-orb-symbol');
-
-  // Formulario y campos
+  // Formulario y campos de login
   const formLogin = document.getElementById('form-login');
   const inputName = document.getElementById('input-player-name');
   const inputEmail = document.getElementById('input-player-email');
   const activePlayerName = document.getElementById('active-player-name');
+  const activeLevelIndicator = document.getElementById('active-level-indicator');
 
-  // Semáforo F1 y Zona de Reacción
-  const reactionZone = document.getElementById('reaction-touch-zone');
-  const touchIcon = document.getElementById('touch-zone-icon');
-  const touchTitle = document.getElementById('touch-zone-title');
-  const touchSubtitle = document.getElementById('touch-zone-subtitle');
-  const bulbs = [
-    document.getElementById('bulb-1'),
-    document.getElementById('bulb-2'),
-    document.getElementById('bulb-3'),
-    document.getElementById('bulb-4'),
-    document.getElementById('bulb-5')
-  ];
+  // Elementos de la Tarjeta Cromática Principal
+  const chromaticCard = document.querySelector('.chromatic-stage-card');
+  const reactionOrb = document.getElementById('reaction-orb');
+  const stageTitle = document.getElementById('stage-title');
+  const stageDesc = document.getElementById('stage-desc');
+  const btnStartRound = document.getElementById('btn-start-round');
+  const btnStartLabel = document.getElementById('btn-start-label');
+  const alertBanner = document.getElementById('stage-alert-banner');
+  const alertIcon = document.getElementById('stage-alert-icon');
+  const alertText = document.getElementById('stage-alert-text');
 
-  // Resultados
+  // Botones de Selección de Color
+  const colorButtons = {
+    red: document.getElementById('btn-color-red'),
+    yellow: document.getElementById('btn-color-yellow'),
+    green: document.getElementById('btn-color-green'),
+    blue: document.getElementById('btn-color-blue')
+  };
+
+  const COLOR_DEFINITIONS = {
+    red: { id: 'red', name: 'ROJO', orbClass: 'orb-red', keyText: '1/R' },
+    yellow: { id: 'yellow', name: 'AMARILLO', orbClass: 'orb-yellow', keyText: '2/A' },
+    green: { id: 'green', name: 'VERDE', orbClass: 'orb-green', keyText: '3/V' },
+    blue: { id: 'blue', name: 'AZUL', orbClass: 'orb-blue', keyText: '4/Z' }
+  };
+
+  // Elementos de la Pantalla de Resultados
   const resultLevelBadge = document.getElementById('result-level-badge');
   const resultTimeNumber = document.getElementById('result-time-number');
   const resultBadge = document.getElementById('result-tier-badge');
   const resultRankIcon = document.getElementById('result-rank-icon');
   const resultRankText = document.getElementById('result-rank-text');
+  const telemetryPlayerName = document.getElementById('telemetry-player-name');
+  const telemetryDiff = document.getElementById('telemetry-verstappen-diff');
+  const telemetrySpeedRank = document.getElementById('telemetry-speed-rank');
   const btnRetry = document.getElementById('btn-retry-test');
   const btnNextPlayer = document.getElementById('btn-next-player');
   const btnSoundToggle = document.getElementById('btn-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
 
-  // Estado del juego
-  let currentLevel = 'Semáforo F1'; // 'Semáforo F1' o 'Solo Colores'
+  // Variables de Estado
+  const currentLevel = 'Reacción a Colores';
   let currentPlayer = { name: '', email: '' };
-  let gameState = 'IDLE'; // 'IDLE', 'COUNTDOWN', 'HOLDING', 'GO', 'JUMP_START', 'FINISHED'
+  let gameState = 'IDLE'; // 'IDLE', 'WAITING', 'ACTIVE', 'FINISHED'
+  let activeColor = null;
   let startTime = 0;
   let reactionTime = 0;
-  let countdownTimers = [];
-  let holdingTimeout = null;
-
-  // Manejo de Selección de Nivel
-  if (btnSelectF1 && btnSelectColors) {
-    btnSelectF1.addEventListener('click', () => {
-      currentLevel = 'Semáforo F1';
-      selectedLevelInput.value = currentLevel;
-      btnSelectF1.classList.add('active');
-      btnSelectColors.classList.remove('active');
-    });
-
-    btnSelectColors.addEventListener('click', () => {
-      currentLevel = 'Solo Colores';
-      selectedLevelInput.value = currentLevel;
-      btnSelectColors.classList.add('active');
-      btnSelectF1.classList.remove('active');
-    });
-  }
+  let waitingTimeout = null;
+  let alertTimeout = null;
 
   // Manejo de Sonido
   if (btnSoundToggle) {
@@ -99,218 +92,255 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    currentLevel = selectedLevelInput ? selectedLevelInput.value : 'Semáforo F1';
     currentPlayer = { name, email };
     activePlayerName.textContent = name;
     if (activeLevelIndicator) {
-      activeLevelIndicator.textContent = `NIVEL: ${currentLevel.toUpperCase()}`;
-    }
-
-    // Configurar visibilidad según el nivel elegido
-    if (currentLevel === 'Solo Colores') {
-      if (f1Gantry) f1Gantry.style.display = 'none';
-      if (colorStageContainer) colorStageContainer.style.display = 'flex';
-    } else {
-      if (f1Gantry) f1Gantry.style.display = 'inline-flex';
-      if (colorStageContainer) colorStageContainer.style.display = 'none';
+      activeLevelIndicator.textContent = 'REFLEJOS CROMÁTICOS';
     }
 
     // Cambiar a pantalla de Test
     screenLogin.style.display = 'none';
     screenResults.style.display = 'none';
-    screenTest.style.display = 'block';
+    screenTest.style.display = 'flex';
 
-    // Iniciar test según nivel
-    startLevelTest();
+    resetToIdleState();
   });
 
-  function startLevelTest() {
+  // 2. Restablecer al estado inicial (listo para comenzar)
+  function resetToIdleState() {
     clearAllTimers();
+    gameState = 'IDLE';
+    activeColor = null;
 
-    if (currentLevel === 'Solo Colores') {
-      initColorTest();
-    } else {
-      initF1Countdown();
+    hideAlert();
+    clearButtonHighlights();
+
+    if (chromaticCard) {
+      chromaticCard.classList.remove('shake');
+    }
+
+    if (reactionOrb) {
+      reactionOrb.className = 'chromatic-orb orb-red';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = 'REACCIÓN A COLORES';
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = 'Aparecerá un color sorpresa. Presioná el botón correspondiente <strong>lo más rápido posible</strong>.';
+    }
+
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic';
+    }
+
+    if (btnStartLabel) {
+      btnStartLabel.textContent = 'COMENZAR NIVEL';
     }
   }
 
-  // =========================================================================
-  // NIVEL 1: SEMÁFORO DE FÓRMULA 1
-  // =========================================================================
-  function initF1Countdown() {
-    resetBulbs();
-    gameState = 'COUNTDOWN';
-
-    reactionZone.className = 'reaction-touch-zone state-ready';
-    touchIcon.textContent = '⏱️';
-    touchTitle.textContent = 'PREPARATE...';
-    touchSubtitle.textContent = 'Las 5 luces se van a encender. Apenas se apaguen todas, ¡tocá la pantalla!';
-
-    const intervalStep = 850;
-    for (let i = 0; i < 5; i++) {
-      const timer = setTimeout(() => {
-        if (gameState !== 'COUNTDOWN') return;
-        turnOnBulb(i);
-        window.racingAudio.playLightBeep(i + 1);
-
-        if (i === 4) {
-          startF1HoldingPhase();
-        }
-      }, (i + 1) * intervalStep);
-
-      countdownTimers.push(timer);
-    }
+  // 3. Comenzar Ronda de Desafío
+  if (btnStartRound) {
+    btnStartRound.addEventListener('click', handleStartRound);
   }
 
-  function turnOnBulb(index) {
-    if (bulbs[index]) {
-      bulbs[index].classList.add('on');
-    }
-  }
+  function handleStartRound() {
+    if (gameState !== 'IDLE') return;
 
-  function resetBulbs() {
-    bulbs.forEach(b => {
-      if (b) b.classList.remove('on');
-    });
-  }
-
-  function startF1HoldingPhase() {
-    gameState = 'HOLDING';
-    touchTitle.textContent = '¡ATENCIÓN!';
-    touchSubtitle.textContent = 'Esperá a que se apaguen las luces... ¡No te anticipes!';
-
-    const randomDelay = Math.floor(Math.random() * 2200) + 1200;
-
-    holdingTimeout = setTimeout(() => {
-      if (gameState !== 'HOLDING') return;
-      triggerF1LightsOut();
-    }, randomDelay);
-  }
-
-  function triggerF1LightsOut() {
-    gameState = 'GO';
-    resetBulbs();
-    startTime = performance.now();
-
-    window.racingAudio.playStartLightsOut();
-
-    reactionZone.className = 'reaction-touch-zone state-go';
-    touchIcon.textContent = '⚡';
-    touchTitle.textContent = '¡¡TOCÁ AHORA!!';
-    touchSubtitle.textContent = '¡¡DALE RÁPIDO!!';
-  }
-
-  // =========================================================================
-  // NIVEL 2: TEST SOLO COLORES (ESTÍMULO CROMÁTICO SORPRESA)
-  // =========================================================================
-  function initColorTest() {
-    gameState = 'HOLDING';
-
-    // Establecer orbe en ROJO (Espera/Detención)
-    if (colorOrb) {
-      colorOrb.className = 'color-stage-orb color-red';
-      if (colorOrbSymbol) colorOrbSymbol.textContent = '🔴';
-    }
-
-    reactionZone.className = 'reaction-touch-zone state-ready';
-    touchIcon.textContent = '🎨';
-    touchTitle.textContent = 'ATENTO AL COLOR ROJO...';
-    touchSubtitle.textContent = '¡No toques todavía! Esperá a que cambie de color inesperadamente.';
+    gameState = 'WAITING';
+    hideAlert();
+    clearButtonHighlights();
 
     window.racingAudio.playLightBeep(1);
 
-    // Retardo aleatorio de 1.4s a 3.6s
-    const randomDelay = Math.floor(Math.random() * 2200) + 1400;
+    if (reactionOrb) {
+      reactionOrb.className = 'chromatic-orb orb-waiting';
+    }
 
-    holdingTimeout = setTimeout(() => {
-      if (gameState !== 'HOLDING') return;
-      triggerColorChange();
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic state-waiting';
+    }
+
+    if (btnStartLabel) {
+      btnStartLabel.textContent = 'CONCENTRATE...';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = '¡ATENTO AL COLOR!';
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = 'Esperá a que se ilumine el orbe central. <strong>¡No te anticipes!</strong>';
+    }
+
+    // Retardo aleatorio de espera sorpresa (1400ms a 3400ms)
+    const randomDelay = Math.floor(Math.random() * 2000) + 1400;
+
+    waitingTimeout = setTimeout(() => {
+      if (gameState !== 'WAITING') return;
+      triggerColorStimulus();
     }, randomDelay);
   }
 
-  function triggerColorChange() {
-    gameState = 'GO';
+  // 4. Activación del Estímulo Cromático
+  function triggerColorStimulus() {
+    gameState = 'ACTIVE';
 
-    // Elegir aleatoriamente entre Verde Competición, Amarillo Eléctrico o Azul
-    const colors = [
-      { cls: 'color-green', symbol: '🟢', name: 'VERDE' },
-      { cls: 'color-yellow', symbol: '🟡', name: 'AMARILLO' },
-      { cls: 'color-blue', symbol: '🔵', name: 'AZUL' }
-    ];
-    const picked = colors[Math.floor(Math.random() * colors.length)];
+    const colorKeys = Object.keys(COLOR_DEFINITIONS);
+    const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+    const colorInfo = COLOR_DEFINITIONS[randomColorKey];
 
-    if (colorOrb) {
-      colorOrb.className = `color-stage-orb ${picked.cls}`;
-      if (colorOrbSymbol) colorOrbSymbol.textContent = picked.symbol;
+    activeColor = colorInfo.id;
+
+    if (reactionOrb) {
+      reactionOrb.className = `chromatic-orb ${colorInfo.orbClass}`;
     }
 
     startTime = performance.now();
     window.racingAudio.playStartLightsOut();
 
-    reactionZone.className = 'reaction-touch-zone state-go';
-    touchIcon.textContent = picked.symbol;
-    touchTitle.textContent = `¡¡CAMBIÓ A ${picked.name}!!`;
-    touchSubtitle.textContent = '¡¡TOCÁ LA PANTALLA YA!!';
-  }
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic state-active';
+    }
 
-  // =========================================================================
-  // CONTROL DE TOQUE & MEDICIÓN
-  // =========================================================================
-  function clearAllTimers() {
-    countdownTimers.forEach(t => clearTimeout(t));
-    countdownTimers = [];
-    if (holdingTimeout) {
-      clearTimeout(holdingTimeout);
-      holdingTimeout = null;
+    if (btnStartLabel) {
+      btnStartLabel.textContent = '¡¡TOCÁ AHORA!!';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = `¡¡COLOR ${colorInfo.name}!!`;
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = `¡Presioná el botón <strong>${colorInfo.name}</strong> a máxima velocidad!`;
     }
   }
 
-  reactionZone.addEventListener('pointerdown', handleUserTouch);
+  // 5. Interacción del Usuario con los Botones de Color
+  Object.keys(colorButtons).forEach((colorKey) => {
+    const btn = colorButtons[colorKey];
+    if (btn) {
+      // Evento pointerdown para latencia mínima sin retraso de 300ms
+      btn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        handleColorSelection(colorKey);
+      });
+    }
+  });
 
-  function handleUserTouch(e) {
-    e.preventDefault();
+  function handleColorSelection(chosenColor) {
+    if (gameState === 'WAITING') {
+      // Salida en falso / Anticipación
+      handleEarlyTouch();
+      return;
+    }
 
-    if (gameState === 'COUNTDOWN' || gameState === 'HOLDING') {
-      handleJumpStart();
-    } else if (gameState === 'GO') {
-      const endTime = performance.now();
-      reactionTime = Math.round(endTime - startTime);
-      handleReactionSuccess(reactionTime);
+    if (gameState === 'IDLE') {
+      showAlert('⚠️ Primero presioná el botón "COMENZAR NIVEL"');
+      return;
+    }
+
+    if (gameState === 'ACTIVE') {
+      if (chosenColor === activeColor) {
+        // ¡Acierto de color!
+        const endTime = performance.now();
+        reactionTime = Math.round(endTime - startTime);
+        handleReactionSuccess(reactionTime, chosenColor);
+      } else {
+        // Color Incorrecto
+        handleWrongColorTouch(chosenColor);
+      }
     }
   }
 
-  function handleJumpStart() {
-    gameState = 'JUMP_START';
+  // Anticipación / Salida en falso
+  function handleEarlyTouch() {
     clearAllTimers();
-    resetBulbs();
+    gameState = 'IDLE';
 
     window.racingAudio.playJumpStartAlert();
 
-    reactionZone.className = 'reaction-touch-zone state-jumpstart';
-    touchIcon.textContent = '🚨';
-    touchTitle.textContent = '¡SALIDA EN FALSO!';
-    touchSubtitle.textContent = currentLevel === 'Solo Colores'
-      ? '¡Tocaste antes de que cambie de color! Tenés que esperar.'
-      : 'Te anticipaste antes de que se apaguen las luces.';
+    if (chromaticCard) {
+      chromaticCard.classList.remove('shake');
+      void chromaticCard.offsetWidth; // Force reflow
+      chromaticCard.classList.add('shake');
+    }
 
-    setTimeout(() => {
-      if (gameState === 'JUMP_START') {
-        touchTitle.textContent = 'TOCÁ PARA REINTENTAR';
-        touchSubtitle.textContent = 'Mantené la calma y esperá la señal.';
-        const oneTimeRestart = () => {
-          reactionZone.removeEventListener('click', oneTimeRestart);
-          startLevelTest();
-        };
-        reactionZone.addEventListener('click', oneTimeRestart, { once: true });
-      }
-    }, 1200);
+    showAlert('🚨 ¡SALIDA EN FALSO! Tocaste antes de tiempo.');
+
+    if (reactionOrb) {
+      reactionOrb.className = 'chromatic-orb orb-idle';
+    }
+
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic';
+    }
+
+    if (btnStartLabel) {
+      btnStartLabel.textContent = 'REINTENTAR NIVEL';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = '¡ANTICIPACIÓN DETECTADA!';
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = 'Debés esperar a que el orbe se ilumine antes de presionar.';
+    }
   }
 
-  function handleReactionSuccess(timeMs) {
+  // Color equivocado
+  function handleWrongColorTouch(chosenColor) {
+    clearAllTimers();
+    gameState = 'IDLE';
+
+    window.racingAudio.playWrongColorAlert();
+
+    if (chromaticCard) {
+      chromaticCard.classList.remove('shake');
+      void chromaticCard.offsetWidth;
+      chromaticCard.classList.add('shake');
+    }
+
+    const correctName = COLOR_DEFINITIONS[activeColor] ? COLOR_DEFINITIONS[activeColor].name : '';
+    const chosenName = COLOR_DEFINITIONS[chosenColor] ? COLOR_DEFINITIONS[chosenColor].name : '';
+
+    showAlert(`❌ ¡COLOR INCORRECTO! Era ${correctName} y presionaste ${chosenName}.`);
+
+    if (reactionOrb) {
+      reactionOrb.className = 'chromatic-orb orb-idle';
+    }
+
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic';
+    }
+
+    if (btnStartLabel) {
+      btnStartLabel.textContent = 'REINTENTAR';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = '¡BOTÓN EQUIVOCADO!';
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = `El color era <strong>${correctName}</strong>. Mantené la concentración e intentá de nuevo.`;
+    }
+  }
+
+  // Reacción exitosa
+  function handleReactionSuccess(timeMs, matchedColor) {
     gameState = 'FINISHED';
     window.racingAudio.playTouchHit();
 
-    // Guardar en Storage con el nivel correspondiente
+    // Iluminar el botón presionado
+    const targetBtn = colorButtons[matchedColor];
+    if (targetBtn) {
+      targetBtn.classList.add('glow-hit');
+    }
+
+    // Guardar en Storage
     const rating = window.racingStorage.calculateRating(timeMs);
     window.racingStorage.saveParticipant({
       name: currentPlayer.name,
@@ -320,51 +350,136 @@ document.addEventListener('DOMContentLoaded', () => {
       rating: rating
     });
 
-    if (timeMs < 250) {
+    if (timeMs < 280) {
       window.racingAudio.playFanfare();
     }
 
     setTimeout(() => {
       showResults(timeMs, rating);
-    }, 400);
+    }, 450);
   }
 
+  // 6. Mostrar Pantalla de Resultados
   function showResults(timeMs, rating) {
     screenTest.style.display = 'none';
     screenResults.style.display = 'block';
 
     if (resultLevelBadge) {
-      resultLevelBadge.textContent = currentLevel.toUpperCase();
+      resultLevelBadge.textContent = 'REACCIÓN A COLORES';
     }
-    resultTimeNumber.textContent = timeMs;
-    resultBadge.className = `result-badge ${rating.classBadge}`;
-    resultRankIcon.textContent = rating.icon;
-    resultRankText.textContent = rating.tier;
+    if (resultTimeNumber) {
+      resultTimeNumber.textContent = timeMs;
+    }
+    if (resultBadge) {
+      resultBadge.className = `result-badge ${rating.classBadge}`;
+    }
+    if (resultRankIcon) {
+      resultRankIcon.textContent = rating.icon;
+    }
+    if (resultRankText) {
+      resultRankText.textContent = rating.tier;
+    }
 
-    document.getElementById('telemetry-player-name').textContent = currentPlayer.name;
-    document.getElementById('telemetry-verstappen-diff').textContent = (timeMs <= 200) ? '¡Superaste a un piloto F1!' : `+${timeMs - 200} ms`;
-    document.getElementById('telemetry-speed-rank').textContent = timeMs < 280 ? 'Élite' : (timeMs < 380 ? 'Avanzado' : 'Normal');
+    if (telemetryPlayerName) {
+      telemetryPlayerName.textContent = currentPlayer.name;
+    }
+    if (telemetryDiff) {
+      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste a un piloto F1!' : `+${timeMs - 200} ms`;
+    }
+    if (telemetrySpeedRank) {
+      telemetrySpeedRank.textContent = timeMs < 250 ? 'Sobrenatural' : (timeMs < 350 ? 'Avanzado' : 'Normal');
+    }
   }
 
-  // Botón: Reintentar
-  btnRetry.addEventListener('click', () => {
-    screenResults.style.display = 'none';
-    screenTest.style.display = 'block';
-    startLevelTest();
+  // 7. Botones de Resultados
+  if (btnRetry) {
+    btnRetry.addEventListener('click', () => {
+      screenResults.style.display = 'none';
+      screenTest.style.display = 'flex';
+      resetToIdleState();
+    });
+  }
+
+  if (btnNextPlayer) {
+    btnNextPlayer.addEventListener('click', () => {
+      inputName.value = '';
+      inputEmail.value = '';
+      currentPlayer = { name: '', email: '' };
+
+      screenResults.style.display = 'none';
+      screenTest.style.display = 'none';
+      screenLogin.style.display = 'block';
+
+      setTimeout(() => {
+        inputName.focus();
+      }, 200);
+    });
+  }
+
+  // 8. Soporte para Teclado (1/R, 2/A, 3/V, 4/Z, Barra Espaciadora / Enter)
+  window.addEventListener('keydown', (e) => {
+    // Si el usuario está escribiendo en un input, ignorar atajos del juego
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      return;
+    }
+
+    const key = e.key.toLowerCase();
+
+    // Iniciar nivel con Espacio o Enter si está en IDLE en la pantalla de test
+    if ((key === ' ' || key === 'enter') && screenTest.style.display !== 'none' && gameState === 'IDLE') {
+      e.preventDefault();
+      handleStartRound();
+      return;
+    }
+
+    // Teclas para botones de colores
+    if (key === '1' || key === 'r') {
+      e.preventDefault();
+      handleColorSelection('red');
+    } else if (key === '2' || key === 'a') {
+      e.preventDefault();
+      handleColorSelection('yellow');
+    } else if (key === '3' || key === 'v') {
+      e.preventDefault();
+      handleColorSelection('green');
+    } else if (key === '4' || key === 'z') {
+      e.preventDefault();
+      handleColorSelection('blue');
+    }
   });
 
-  // Botón: Siguiente Participante
-  btnNextPlayer.addEventListener('click', () => {
-    inputName.value = '';
-    inputEmail.value = '';
-    currentPlayer = { name: '', email: '' };
+  // Utilidades auxiliares
+  function clearAllTimers() {
+    if (waitingTimeout) {
+      clearTimeout(waitingTimeout);
+      waitingTimeout = null;
+    }
+    if (alertTimeout) {
+      clearTimeout(alertTimeout);
+      alertTimeout = null;
+    }
+  }
 
-    screenResults.style.display = 'none';
-    screenTest.style.display = 'none';
-    screenLogin.style.display = 'block';
+  function clearButtonHighlights() {
+    Object.values(colorButtons).forEach(btn => {
+      if (btn) btn.classList.remove('glow-hit');
+    });
+  }
 
-    setTimeout(() => {
-      inputName.focus();
-    }, 200);
-  });
+  function showAlert(msg) {
+    if (!alertBanner || !alertText) return;
+    alertText.textContent = msg;
+    alertBanner.style.display = 'inline-flex';
+
+    if (alertTimeout) clearTimeout(alertTimeout);
+    alertTimeout = setTimeout(() => {
+      hideAlert();
+    }, 3500);
+  }
+
+  function hideAlert() {
+    if (alertBanner) {
+      alertBanner.style.display = 'none';
+    }
+  }
 });
