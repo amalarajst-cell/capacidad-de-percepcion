@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Control en Vivo | Leaderboard TV Stand</title>
-  <meta name="description" content="Panel de administración en vivo y pantalla de podio para el stand de Capacidad de Percepción.">
+  <title>CENTRO DE FORMACIÓN PROFESIONAL 412 | MANEJO SEGURO</title>
+  <meta name="description" content="Centro de Formación Profesional 412 - Manejo Seguro - Leaderboard en Vivo Stand">
 
   <!-- Estilos y Tipografías -->
   <link rel="stylesheet" href="css/racing.css">
@@ -18,10 +18,24 @@
   <header class="race-header">
     <div class="header-container">
       <div class="header-brand">
-        <img src="assets/logo.png" alt="Logo Escuela CFL 412" class="school-logo-img" onerror="this.style.display='none'">
+        <!-- Emblema Vectorial Moderno CFP 412 (Sin fondo blanco, acorde a la app) -->
+        <div class="brand-emblem-badge" aria-label="Escudo CFP 412">
+          <svg class="school-emblem-svg" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 3L43 11V24C43 34.5 24 45 24 45C24 45 5 34.5 5 24V11L24 3Z" fill="url(#emblem-grad-admin)" stroke="#5ce1e6" stroke-width="2.2"/>
+            <path d="M24 12L34 16.5V24C34 29.5 24 36.5 24 36.5C24 36.5 14 29.5 14 24V16.5L24 12Z" fill="rgba(92,225,230,0.12)" stroke="#ffd700" stroke-width="1.6"/>
+            <text x="24" y="27" font-family="'Cabinet Grotesk', 'Outfit', sans-serif" font-weight="900" font-size="7.2" fill="#ffffff" text-anchor="middle" letter-spacing="0.6">CFP 412</text>
+            <defs>
+              <linearGradient id="emblem-grad-admin" x1="5" y1="3" x2="43" y2="45" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#122543"/>
+                <stop offset="1" stop-color="#060c17"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
         <div class="brand-titles">
-          <h1 class="brand-main-title">PANEL DE <span>CONTROL</span></h1>
-          <span class="brand-sub-title">LEADERBOARD EN VIVO & GESTIÓN DE PARTICIPANTES</span>
+          <h1 class="brand-main-title">CENTRO DE FORMACIÓN <span>PROFESIONAL 412</span></h1>
+          <span class="brand-sub-title subtitle-manejoseguro">MANEJO SEGURO</span>
         </div>
       </div>
 
@@ -53,21 +67,21 @@
        ========================================================================== -->
   <main class="main-wrapper admin-screen-container">
 
-    <!-- FILA DE MÉTRICAS GLOBALES DEL STAND -->
+    <!-- FILA DE MÉTRICAS GLOBALES DEL STAND (ALTA VISIBILIDAD) -->
     <section class="metrics-row">
-      <div class="metric-card">
+      <div class="metric-card metric-card-total">
         <div class="metric-title">TOTAL PARTICIPANTES</div>
         <div class="metric-value" id="metric-total-participants">0</div>
         <div class="metric-sub">Registrados hoy en el stand</div>
       </div>
 
-      <div class="metric-card" style="border-color: rgba(255, 215, 0, 0.4);">
+      <div class="metric-card metric-card-record">
         <div class="metric-title" style="color: #FFD700;">RÉCORD DEL DÍA 🏆</div>
         <div class="metric-value" id="metric-best-time" style="color: #FFD700;">-- s</div>
         <div class="metric-sub" id="metric-best-holder">Sin registros aún</div>
       </div>
 
-      <div class="metric-card">
+      <div class="metric-card metric-card-avg">
         <div class="metric-title">TIEMPO PROMEDIO</div>
         <div class="metric-value" id="metric-avg-time">-- s</div>
         <div class="metric-sub">Velocidad media de reacción</div>
@@ -78,11 +92,11 @@
     <div class="admin-grid">
 
       <!-- COLUMNA IZQUIERDA: PODIO F1 (TOP 3) -->
-      <aside class="screen-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <aside class="screen-card podium-card-wrapper" style="display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div class="hero-banner" style="margin-bottom: 12px; text-align: left;">
             <div class="racing-badge-strip">PODIO DE CAMPEONES</div>
-            <h2 class="hero-title" style="font-size: 1.8rem;">TOP 3 <span>REFLEJOS</span></h2>
+            <h2 class="hero-title" style="font-size: 1.8rem;">TOP 3 <span>MEJORES REFLEJOS</span></h2>
           </div>
 
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
@@ -137,7 +151,7 @@
       </aside>
 
       <!-- COLUMNA DERECHA: TABLA EN VIVO Y EXPORTACIÓN -->
-      <section class="screen-card">
+      <section class="screen-card table-card-wrapper">
         <!-- Barra de herramientas de Admin -->
         <div class="admin-toolbar">
           <!-- Filtro por Nivel -->
@@ -168,13 +182,12 @@
           <table class="race-table" id="leaderboard-table">
             <thead>
               <tr>
-                <th>POS</th>
-                <th>NIVEL</th>
+                <th style="width: 60px;">POS</th>
                 <th>CONDUCTOR/A / HORA</th>
-                <th>CORREO ELECTRÓNICO</th>
-                <th>TIEMPO (seg)</th>
+                <th>TIEMPO PROMEDIO</th>
+                <th>MEJOR INTENTO</th>
                 <th>CATEGORÍA</th>
-                <th style="text-align: right;">ACCIÓN</th>
+                <th style="text-align: right; width: 60px;">ACCIÓN</th>
               </tr>
             </thead>
             <tbody id="leaderboard-tbody">

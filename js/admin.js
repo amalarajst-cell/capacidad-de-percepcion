@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sorted.length === 0) {
       leaderboardBody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+          <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
             ${searchTerm ? 'No se encontraron participantes que coincidan con la búsqueda.' : 'No hay participantes registrados en este filtro. ¡Iniciá el test desde la pantalla principal!'}
           </td>
         </tr>
@@ -174,35 +174,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const tierText = (item.rating && item.rating.tier) ? item.rating.tier : 'Participante';
       const tierBadge = (item.rating && item.rating.classBadge) ? item.rating.classBadge : 'rank-normal';
-      const levelLabel = (item.level === 'Reacción a Colores' || item.level === 'Solo Colores') ? '🎨 Colores' : '🚦 F1';
-      const timeSec = (item.timeMs / 1000).toFixed(3);
+      const avgSec = (item.timeMs / 1000).toFixed(3);
+      const bestSec = item.bestTimeMs ? (item.bestTimeMs / 1000).toFixed(3) : avgSec;
 
       return `
         <tr class="${isNew}" data-id="${item.id}">
-          <td style="width: 50px;">
+          <td style="width: 60px;">
             <span class="rank-badge ${badgeClass}">${pos}</span>
           </td>
-          <td style="width: 110px;">
-            <span class="tag-live" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 6px;">
-              ${levelLabel}
-            </span>
+          <td>
+            <div class="driver-name-cell">${escapeHtml(item.name)}</div>
+            <div class="driver-meta-sub">
+              <span>🕒 ${timeStr} hs</span>
+              ${item.email ? `<span style="opacity: 0.6;">• ${escapeHtml(item.email)}</span>` : ''}
+            </div>
           </td>
           <td>
-            <div style="font-weight: 700; color: #FFF; font-size: 1.05rem;">${escapeHtml(item.name)}</div>
-            <div style="font-size: 0.8rem; color: var(--text-dim);">${timeStr} hs</div>
-          </td>
-          <td style="color: var(--text-muted); font-size: 0.9rem;">
-            ${item.email ? escapeHtml(item.email) : '<span style="color: #475569;">No especificado</span>'}
+            <span class="table-time-cell table-avg-time">${avgSec} s</span>
+            <div class="table-sub-label">Promedio 5 intentos</div>
           </td>
           <td>
-            <span class="table-time-cell">${timeSec} s</span>
-            ${item.bestTimeMs ? `<div style="font-size: 0.78rem; color: var(--accent-yellow); font-family: var(--font-race); margin-top: 2px; letter-spacing: 0.5px;">⭐ Mejor: ${(item.bestTimeMs / 1000).toFixed(3)}s</div>` : ''}
+            <span class="table-best-time-cell">⭐ ${bestSec} s</span>
+            <div class="table-sub-label">Mejor intento</div>
           </td>
           <td>
-            <span class="result-badge ${tierBadge}" style="font-size: 0.75rem; padding: 4px 10px;">${tierText}</span>
+            <span class="result-badge ${tierBadge}" style="font-size: 0.85rem; padding: 6px 14px;">${tierText}</span>
           </td>
           <td style="text-align: right; width: 60px;">
-            <button type="button" class="btn-delete-row" title="Eliminar este registro" data-id="${item.id}" style="background:none; border:none; color: #64748B; cursor:pointer; font-size: 1.1rem; padding: 4px;">
+            <button type="button" class="btn-delete-row" title="Eliminar este participante" data-id="${item.id}" style="background:none; border:none; color: #64748B; cursor:pointer; font-size: 1.2rem; padding: 6px; transition: color 0.2s;">
               🗑️
             </button>
           </td>
