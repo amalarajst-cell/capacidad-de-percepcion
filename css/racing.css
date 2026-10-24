@@ -715,12 +715,95 @@ html, body {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #94a3b8;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .badge-hand-icon {
   font-size: 1.1rem;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Barra de Progreso de 5 Intentos */
+.attempts-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 16px;
+}
+
+.attempt-pip {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.attempt-pip .pip-label {
+  font-family: var(--font-race);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.attempt-pip .pip-val {
+  font-family: var(--font-race);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.attempt-pip.active {
+  border-color: #5ce1e6;
+  background: rgba(92, 225, 230, 0.12);
+  box-shadow: 0 0 12px rgba(92, 225, 230, 0.3);
+  transform: translateY(-1px);
+}
+
+.attempt-pip.active .pip-label {
+  color: #5ce1e6;
+}
+
+.attempt-pip.active .pip-val {
+  color: #ffffff;
+}
+
+.attempt-pip.completed {
+  border-color: #00e676;
+  background: rgba(0, 230, 118, 0.08);
+}
+
+.attempt-pip.completed .pip-label {
+  color: #00e676;
+}
+
+.attempt-pip.completed .pip-val {
+  color: #00e676;
+}
+
+.attempt-pip.best {
+  border-color: #ffb703;
+  background: rgba(255, 183, 3, 0.14);
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
+}
+
+.attempt-pip.best .pip-label {
+  color: #ffb703;
+}
+
+.attempt-pip.best .pip-val {
+  color: #ffb703;
 }
 
 /* Orbe Luminoso Central */
@@ -1196,11 +1279,112 @@ html, body {
 
 .time-unit {
   font-family: var(--font-race);
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: var(--text-white);
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   margin-top: 4px;
+}
+
+/* Tarjeta de Desglose de 5 Intentos */
+.attempts-breakdown-card {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(10, 19, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.breakdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.breakdown-title {
+  font-family: var(--font-race);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.breakdown-badge {
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  color: #050b14;
+  font-family: var(--font-race);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.35);
+}
+
+.attempts-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.attempt-result-chip {
+  background: rgba(5, 11, 20, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.attempt-result-chip .chip-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.attempt-result-chip .chip-num {
+  font-family: var(--font-race);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.attempt-result-chip .chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.attempt-result-chip .chip-time {
+  font-family: var(--font-race);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.attempt-result-chip.is-best {
+  border-color: #ffb703;
+  background: rgba(255, 183, 3, 0.12);
+  box-shadow: 0 0 18px rgba(255, 183, 3, 0.35);
+}
+
+.attempt-result-chip.is-best .chip-num {
+  color: #ffb703;
+}
+
+.attempt-result-chip.is-best .chip-time {
+  color: #ffb703;
+  text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
 }
 
 .telemetry-row {
@@ -1894,6 +2078,59 @@ html, body {
 
   .time-number {
     font-size: clamp(2.8rem, 14vw, 4.2rem);
+  }
+
+  /* Barra de progreso de intentos en celular */
+  .attempts-progress-bar {
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .attempt-pip {
+    padding: 4px 2px;
+    border-radius: 8px;
+  }
+
+  .attempt-pip .pip-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.5px;
+  }
+
+  .attempt-pip .pip-val {
+    font-size: 0.74rem;
+  }
+
+  /* Desglose de intentos en resultados en celular */
+  .attempts-breakdown-card {
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+
+  .breakdown-title {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .breakdown-badge {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+
+  .attempts-grid {
+    gap: 6px;
+  }
+
+  .attempt-result-chip {
+    padding: 8px 2px;
+    border-radius: 8px;
+  }
+
+  .attempt-result-chip .chip-num {
+    font-size: 0.62rem;
+  }
+
+  .attempt-result-chip .chip-time {
+    font-size: 0.86rem;
   }
 
   .telemetry-row {

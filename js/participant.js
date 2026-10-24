@@ -80,29 +80,45 @@ document.addEventListener('DOMContentLoaded', () => {
     blue: { id: 'blue', name: 'AZUL', orbClass: 'orb-blue', keyText: '4/Z' }
   };
 
+  // Elementos de Intentos y Progreso
+  const chromaticAttemptText = document.getElementById('chromatic-attempt-text');
+  const attemptPips = [
+    { pip: document.getElementById('pip-1'), val: document.getElementById('pip-val-1') },
+    { pip: document.getElementById('pip-2'), val: document.getElementById('pip-val-2') },
+    { pip: document.getElementById('pip-3'), val: document.getElementById('pip-val-3') },
+    { pip: document.getElementById('pip-4'), val: document.getElementById('pip-val-4') },
+    { pip: document.getElementById('pip-5'), val: document.getElementById('pip-val-5') }
+  ];
+
   // Elementos de la Pantalla de Resultados
   const resultLevelBadge = document.getElementById('result-level-badge');
   const resultTimeNumber = document.getElementById('result-time-number');
   const resultBadge = document.getElementById('result-tier-badge');
   const resultRankIcon = document.getElementById('result-rank-icon');
   const resultRankText = document.getElementById('result-rank-text');
+  const resultsAttemptsGrid = document.getElementById('results-attempts-grid');
+  const breakdownBestBadge = document.getElementById('breakdown-best-badge');
   const telemetryPlayerName = document.getElementById('telemetry-player-name');
+  const telemetryBestTime = document.getElementById('telemetry-best-time');
   const telemetryDiff = document.getElementById('telemetry-verstappen-diff');
-  const telemetrySpeedRank = document.getElementById('telemetry-speed-rank');
   const btnRetry = document.getElementById('btn-retry-test');
   const btnNextPlayer = document.getElementById('btn-next-player');
   const btnSoundToggle = document.getElementById('btn-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
 
-  // Variables de Estado
+  // Variables de Estado para Ronda de 5 Intentos
+  const TOTAL_ATTEMPTS = 5;
   const currentLevel = 'Reacción a Colores';
   let currentPlayer = { name: '', email: '' };
-  let gameState = 'IDLE'; // 'IDLE', 'WAITING', 'ACTIVE', 'FINISHED'
+  let currentAttempt = 1;
+  let roundAttempts = []; // [{ attempt: 1, timeMs: 320, color: 'red' }, ...]
+  let gameState = 'IDLE'; // 'IDLE', 'WAITING', 'ACTIVE', 'TRANSITION', 'FINISHED'
   let activeColor = null;
   let startTime = 0;
   let reactionTime = 0;
   let waitingTimeout = null;
   let alertTimeout = null;
+  let nextAttemptTimeout = null;
 
   // Manejo de Sonido
   if (btnSoundToggle) {
@@ -149,17 +165,56 @@ document.addEventListener('DOMContentLoaded', () => {
     screenResults.style.display = 'none';
     screenTest.style.display = 'flex';
 
-    resetToIdleState();
+    resetToIdleState(true);
   });
 
-  // 2. Restablecer al estado inicial (listo para comenzar)
-  function resetToIdleState() {
+  // Actualizar indicadores visuales de los 5 intentos (Pips)
+  function updatePipsUI() {
+    attemptPips.forEach((item, idx) => {
+      if (!item.pip || !item.val) return;
+      const attemptNum = idx + 1;
+      const recorded = roundAttempts.find(r => r.attempt === attemptNum);
+
+      item.pip.classList.remove('active', 'completed', 'best');
+
+      if (recorded) {
+        item.pip.classList.add('completed');
+        item.val.textContent = (recorded.timeMs / 1000).toFixed(3) + 's';
+      } else if (attemptNum === currentAttempt) {
+        item.pip.classList.add('active');
+        item.val.textContent = gameState === 'WAITING' ? 'ATENTO...' : 'EN ESPERA';
+      } else {
+        item.val.textContent = '--';
+      }
+    });
+
+    // Marcar el intento más veloz si hay registros
+    if (roundAttempts.length > 0) {
+      const minTime = Math.min(...roundAttempts.map(r => r.timeMs));
+      roundAttempts.forEach(r => {
+        if (r.timeMs === minTime) {
+          const bestItem = attemptPips[r.attempt - 1];
+          if (bestItem && bestItem.pip) {
+            bestItem.pip.classList.add('best');
+          }
+        }
+      });
+    }
+  }
+
+  // 2. Restablecer al estado inicial de ronda o de intento
+  function resetToIdleState(resetAll = false) {
     clearAllTimers();
+    if (resetAll) {
+      currentAttempt = 1;
+      roundAttempts = [];
+    }
     gameState = 'IDLE';
     activeColor = null;
 
     hideAlert();
     clearButtonHighlights();
+    updatePipsUI();
 
     if (chromaticCard) {
       chromaticCard.classList.remove('shake');
@@ -169,8 +224,12 @@ document.addEventListener('DOMContentLoaded', () => {
       reactionOrb.className = 'chromatic-orb orb-red';
     }
 
+    if (chromaticAttemptText) {
+      chromaticAttemptText.textContent = `NIVEL 1 • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
+    }
+
     if (stageTitle) {
-      stageTitle.textContent = 'REACCIÓN A COLORES';
+      stageTitle.textContent = currentAttempt === 1 ? 'REACCIÓN A COLORES' : `INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
     }
 
     if (stageDesc) {
@@ -182,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnStartLabel) {
-      btnStartLabel.textContent = 'COMENZAR NIVEL';
+      btnStartLabel.textContent = `COMENZAR INTENTO ${currentAttempt}`;
     }
   }
 
@@ -197,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameState = 'WAITING';
     hideAlert();
     clearButtonHighlights();
+    updatePipsUI();
 
     window.racingAudio.playLightBeep(1);
 
@@ -209,19 +269,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnStartLabel) {
-      btnStartLabel.textContent = 'CONCENTRATE...';
+      btnStartLabel.textContent = `CONCENTRATE (INTENTO ${currentAttempt}/${TOTAL_ATTEMPTS})...`;
     }
 
     if (stageTitle) {
-      stageTitle.textContent = '¡ATENTO AL COLOR!';
+      stageTitle.textContent = `¡ATENTO AL COLOR! (${currentAttempt}/${TOTAL_ATTEMPTS})`;
     }
 
     if (stageDesc) {
       stageDesc.innerHTML = 'Esperá a que se ilumine el orbe central. <strong>¡No te anticipes!</strong>';
     }
 
-    // Retardo aleatorio de espera sorpresa (1400ms a 3400ms)
-    const randomDelay = Math.floor(Math.random() * 2000) + 1400;
+    // Retardo aleatorio de espera sorpresa (1300ms a 3200ms)
+    const randomDelay = Math.floor(Math.random() * 1900) + 1300;
 
     waitingTimeout = setTimeout(() => {
       if (gameState !== 'WAITING') return;
@@ -277,19 +337,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleColorSelection(chosenColor) {
     if (gameState === 'WAITING') {
-      // Salida en falso / Anticipación
+      // Salida en falso / Anticipación en el intento actual
       handleEarlyTouch();
       return;
     }
 
     if (gameState === 'IDLE') {
-      showAlert('⚠️ Primero presioná el botón "COMENZAR NIVEL"');
+      showAlert(`⚠️ Presioná el botón "COMENZAR INTENTO ${currentAttempt}"`);
       return;
     }
 
     if (gameState === 'ACTIVE') {
       if (chosenColor === activeColor) {
-        // ¡Acierto de color!
+        // ¡Acierto de color en el intento actual!
         const endTime = performance.now();
         reactionTime = Math.round(endTime - startTime);
         handleReactionSuccess(reactionTime, chosenColor);
@@ -313,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
       chromaticCard.classList.add('shake');
     }
 
-    showAlert('🚨 ¡SALIDA EN FALSO! Tocaste antes de tiempo.');
+    showAlert(`🚨 ¡SALIDA EN FALSO! Tocaste antes de tiempo en el intento ${currentAttempt}.`);
 
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-idle';
@@ -324,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnStartLabel) {
-      btnStartLabel.textContent = 'REINTENTAR NIVEL';
+      btnStartLabel.textContent = `REINTENTAR INTENTO ${currentAttempt}`;
     }
 
     if (stageTitle) {
@@ -332,8 +392,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (stageDesc) {
-      stageDesc.innerHTML = 'Debés esperar a que el orbe se ilumine antes de presionar.';
+      stageDesc.innerHTML = `Debés esperar a que el orbe se ilumine antes de presionar. Intento ${currentAttempt} de ${TOTAL_ATTEMPTS}.`;
     }
+
+    updatePipsUI();
   }
 
   // Color equivocado
@@ -352,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const correctName = COLOR_DEFINITIONS[activeColor] ? COLOR_DEFINITIONS[activeColor].name : '';
     const chosenName = COLOR_DEFINITIONS[chosenColor] ? COLOR_DEFINITIONS[chosenColor].name : '';
 
-    showAlert(`❌ ¡COLOR INCORRECTO! Era ${correctName} y presionaste ${chosenName}.`);
+    showAlert(`❌ ¡COLOR INCORRECTO! Era ${correctName} y presionaste ${chosenName}. Reintentá el intento ${currentAttempt}.`);
 
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-idle';
@@ -363,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnStartLabel) {
-      btnStartLabel.textContent = 'REINTENTAR';
+      btnStartLabel.textContent = `REINTENTAR INTENTO ${currentAttempt}`;
     }
 
     if (stageTitle) {
@@ -373,50 +435,105 @@ document.addEventListener('DOMContentLoaded', () => {
     if (stageDesc) {
       stageDesc.innerHTML = `El color era <strong>${correctName}</strong>. Mantené la concentración e intentá de nuevo.`;
     }
+
+    updatePipsUI();
   }
 
-  // Reacción exitosa
+  // Reacción exitosa en un intento
   function handleReactionSuccess(timeMs, matchedColor) {
-    gameState = 'FINISHED';
     window.racingAudio.playTouchHit();
 
-    // Iluminar el botón presionado
+    // Registrar intento actual
+    roundAttempts.push({
+      attempt: currentAttempt,
+      timeMs: timeMs,
+      color: matchedColor
+    });
+
+    // Iluminar botón presionado
     const targetBtn = colorButtons[matchedColor];
     if (targetBtn) {
       targetBtn.classList.add('glow-hit');
     }
 
-    // Guardar en Storage
-    const rating = window.racingStorage.calculateRating(timeMs);
-    window.racingStorage.saveParticipant({
-      name: currentPlayer.name,
-      email: currentPlayer.email,
-      level: currentLevel,
-      timeMs: timeMs,
-      rating: rating
-    });
+    updatePipsUI();
 
-    if (timeMs < 280) {
-      window.racingAudio.playFanfare();
+    // ¿Quedan intentos en la ronda?
+    if (currentAttempt < TOTAL_ATTEMPTS) {
+      gameState = 'TRANSITION';
+      const prevAttempt = currentAttempt;
+      currentAttempt++;
+
+      if (chromaticAttemptText) {
+        chromaticAttemptText.textContent = `NIVEL 1 • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
+      }
+
+      if (stageTitle) {
+        stageTitle.textContent = `¡INTENTO ${prevAttempt} REGISTRADO!`;
+      }
+
+      if (stageDesc) {
+        stageDesc.innerHTML = `Tiempo: <strong>${(timeMs / 1000).toFixed(3)} s</strong>. ¡Preparate para el <strong>intento ${currentAttempt} de ${TOTAL_ATTEMPTS}</strong>!`;
+      }
+
+      if (btnStartRound) {
+        btnStartRound.className = 'btn-start-chromatic state-waiting';
+      }
+
+      if (btnStartLabel) {
+        btnStartLabel.textContent = `PREPARANDO INTENTO ${currentAttempt}...`;
+      }
+
+      // Transición automática al siguiente intento (fluidez tipo arcade de stand)
+      nextAttemptTimeout = setTimeout(() => {
+        clearButtonHighlights();
+        gameState = 'IDLE';
+        handleStartRound();
+      }, 1100);
+
+    } else {
+      // ¡Ronda completa finalizada con los 5 intentos!
+      gameState = 'FINISHED';
+
+      const times = roundAttempts.map(r => r.timeMs);
+      const avgTimeMs = Math.round(times.reduce((sum, val) => sum + val, 0) / times.length);
+      const bestTimeMs = Math.min(...times);
+      const rating = window.racingStorage.calculateRating(avgTimeMs);
+
+      // Guardar en Storage
+      window.racingStorage.saveParticipant({
+        name: currentPlayer.name,
+        email: currentPlayer.email,
+        level: currentLevel,
+        timeMs: avgTimeMs,
+        bestTimeMs: bestTimeMs,
+        attempts: roundAttempts,
+        rating: rating
+      });
+
+      if (avgTimeMs < 300 || bestTimeMs < 250) {
+        window.racingAudio.playFanfare();
+      }
+
+      setTimeout(() => {
+        showResults(avgTimeMs, bestTimeMs, roundAttempts, rating);
+      }, 650);
     }
-
-    setTimeout(() => {
-      showResults(timeMs, rating);
-    }, 450);
   }
 
   // 6. Mostrar Pantalla de Resultados
-  function showResults(timeMs, rating) {
+  function showResults(avgTimeMs, bestTimeMs, attempts, rating) {
     screenTest.style.display = 'none';
     screenResults.style.display = 'block';
 
-    const timeInSeconds = (timeMs / 1000).toFixed(3);
+    const avgInSeconds = (avgTimeMs / 1000).toFixed(3);
+    const bestInSeconds = (bestTimeMs / 1000).toFixed(3);
 
     if (resultLevelBadge) {
-      resultLevelBadge.textContent = 'REACCIÓN A COLORES';
+      resultLevelBadge.textContent = 'REACCIÓN A COLORES (5 INTENTOS)';
     }
     if (resultTimeNumber) {
-      resultTimeNumber.textContent = timeInSeconds;
+      resultTimeNumber.textContent = avgInSeconds;
     }
     if (resultBadge) {
       resultBadge.className = `result-badge ${rating.classBadge}`;
@@ -435,12 +552,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (telemetryPlayerName) {
       telemetryPlayerName.textContent = currentPlayer.name;
     }
-    if (telemetryDiff) {
-      const diffSec = ((timeMs - 200) / 1000).toFixed(3);
-      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste el récord!' : `+${diffSec} s`;
+    if (telemetryBestTime) {
+      telemetryBestTime.textContent = `${bestInSeconds} s`;
     }
-    if (telemetrySpeedRank) {
-      telemetrySpeedRank.textContent = timeMs < 250 ? 'Sobrenatural' : (timeMs < 350 ? 'Avanzado' : 'Normal');
+    if (telemetryDiff) {
+      const diffSec = ((avgTimeMs - 200) / 1000).toFixed(3);
+      telemetryDiff.textContent = (avgTimeMs <= 200) ? '¡Superaste el récord!' : `+${diffSec} s`;
+    }
+
+    if (breakdownBestBadge) {
+      breakdownBestBadge.textContent = `⭐ MEJOR: ${bestInSeconds} s`;
+    }
+
+    // Renderizar los 5 chips de intentos
+    if (resultsAttemptsGrid) {
+      resultsAttemptsGrid.innerHTML = attempts.map(item => {
+        const isBest = item.timeMs === bestTimeMs;
+        const colorDot = item.color === 'red' ? '#ff1744' : (item.color === 'yellow' ? '#ffb703' : (item.color === 'green' ? '#00e676' : '#2979ff'));
+        const timeSec = (item.timeMs / 1000).toFixed(3);
+        return `
+          <div class="attempt-result-chip ${isBest ? 'is-best' : ''}">
+            <div class="chip-header">
+              <span class="chip-dot" style="background-color: ${colorDot};"></span>
+              <span class="chip-num">#${item.attempt}${isBest ? ' ★' : ''}</span>
+            </div>
+            <div class="chip-time">${timeSec}s</div>
+          </div>
+        `;
+      }).join('');
     }
   }
 
@@ -449,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRetry.addEventListener('click', () => {
       screenResults.style.display = 'none';
       screenTest.style.display = 'flex';
-      resetToIdleState();
+      resetToIdleState(true);
     });
   }
 
@@ -520,6 +659,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (alertTimeout) {
       clearTimeout(alertTimeout);
       alertTimeout = null;
+    }
+    if (nextAttemptTimeout) {
+      clearTimeout(nextAttemptTimeout);
+      nextAttemptTimeout = null;
     }
   }
 

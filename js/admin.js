@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td>
             <span class="table-time-cell">${timeSec} s</span>
+            ${item.bestTimeMs ? `<div style="font-size: 0.78rem; color: var(--accent-yellow); font-family: var(--font-race); margin-top: 2px; letter-spacing: 0.5px;">⭐ Mejor: ${(item.bestTimeMs / 1000).toFixed(3)}s</div>` : ''}
           </td>
           <td>
             <span class="result-badge ${tierBadge}" style="font-size: 0.75rem; padding: 4px 10px;">${tierText}</span>

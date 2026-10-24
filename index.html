@@ -119,10 +119,34 @@
 
       <!-- Tarjeta Principal del Desafío de Colores (Diseño Exacto de la Imagen) -->
       <div class="chromatic-stage-card">
-        <!-- Badge Superior -->
-        <div class="chromatic-badge-pill">
+        <!-- Badge Superior con Contador de Intentos -->
+        <div class="chromatic-badge-pill" id="chromatic-attempt-pill">
           <span class="badge-hand-icon">👆</span>
-          <span>NIVEL 1 • REFLEJOS CROMÁTICOS</span>
+          <span id="chromatic-attempt-text">NIVEL 1 • INTENTO 1 DE 5</span>
+        </div>
+
+        <!-- Barra de Progreso de los 5 Intentos -->
+        <div class="attempts-progress-bar" id="attempts-progress-bar" aria-label="Progreso de 5 intentos">
+          <div class="attempt-pip active" id="pip-1">
+            <span class="pip-label">INTENTO 1</span>
+            <span class="pip-val" id="pip-val-1">EN ESPERA</span>
+          </div>
+          <div class="attempt-pip" id="pip-2">
+            <span class="pip-label">INTENTO 2</span>
+            <span class="pip-val" id="pip-val-2">--</span>
+          </div>
+          <div class="attempt-pip" id="pip-3">
+            <span class="pip-label">INTENTO 3</span>
+            <span class="pip-val" id="pip-val-3">--</span>
+          </div>
+          <div class="attempt-pip" id="pip-4">
+            <span class="pip-label">INTENTO 4</span>
+            <span class="pip-val" id="pip-val-4">--</span>
+          </div>
+          <div class="attempt-pip" id="pip-5">
+            <span class="pip-label">INTENTO 5</span>
+            <span class="pip-val" id="pip-val-5">--</span>
+          </div>
         </div>
 
         <!-- Orbe Central Luminoso -->
@@ -139,7 +163,7 @@
         <!-- Botón Comenzar Nivel -->
         <button type="button" id="btn-start-round" class="btn-start-chromatic">
           <span class="play-symbol">▷</span>
-          <span id="btn-start-label">COMENZAR NIVEL</span>
+          <span id="btn-start-label">COMENZAR INTENTO 1</span>
         </button>
 
         <!-- Feedback de alerta flotante (Salida en falso / Color incorrecto) -->
@@ -182,24 +206,35 @@
     </section>
 
     <!-- -----------------------------------------------------------------------
-         PANTALLA 3: RESULTADOS Y TELEMETRÍA
+         PANTALLA 3: RESULTADOS Y TELEMETRÍA (5 INTENTOS COMPLETADOS)
          ----------------------------------------------------------------------- -->
     <section id="screen-results" class="screen-card results-card" style="display: none;">
       <div class="hero-banner" style="margin-bottom: 10px;">
         <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 8px;">
-          <span class="racing-badge-strip" id="result-level-badge">REACCIÓN A COLORES</span>
+          <span class="racing-badge-strip" id="result-level-badge">REACCIÓN A COLORES (5 INTENTOS)</span>
         </div>
         <div id="result-tier-badge" class="result-badge rank-f1">
           <span id="result-rank-icon">🏆</span>
           <span id="result-rank-text">Piloto F1 Élite</span>
         </div>
-        <h2 class="hero-title" style="margin-top: 14px;">TIEMPO DE <span>REACCIÓN</span></h2>
+        <h2 class="hero-title" style="margin-top: 14px;">TIEMPO <span>PROMEDIO</span></h2>
       </div>
 
-      <!-- Display Gigante del Tiempo -->
+      <!-- Display Gigante del Tiempo Promedio -->
       <div class="time-display-box">
         <div class="time-number" id="result-time-number">0.000</div>
-        <div class="time-unit">SEGUNDOS</div>
+        <div class="time-unit">SEGUNDOS (PROMEDIO)</div>
+      </div>
+
+      <!-- Desglose de los 5 Intentos -->
+      <div class="attempts-breakdown-card" id="results-breakdown-container">
+        <div class="breakdown-header">
+          <span class="breakdown-title">DESGLOSE DE LOS 5 INTENTOS</span>
+          <span class="breakdown-badge" id="breakdown-best-badge">⭐ MEJOR: --</span>
+        </div>
+        <div class="attempts-grid" id="results-attempts-grid">
+          <!-- Generado dinámicamente con los 5 intentos -->
+        </div>
       </div>
 
       <!-- Telemetría y Comparativa -->
@@ -209,12 +244,12 @@
           <div class="telemetry-val" id="telemetry-player-name">--</div>
         </div>
         <div class="telemetry-item">
-          <div class="telemetry-label">Vs. Reflejo Óptimo (0.200s)</div>
-          <div class="telemetry-val" id="telemetry-verstappen-diff" style="color: var(--accent-yellow);">--</div>
+          <div class="telemetry-label">Mejor Intento</div>
+          <div class="telemetry-val" id="telemetry-best-time" style="color: var(--accent-yellow);">--</div>
         </div>
         <div class="telemetry-item">
-          <div class="telemetry-label">Nivel de Alerta</div>
-          <div class="telemetry-val" id="telemetry-speed-rank">--</div>
+          <div class="telemetry-label">Vs. Reflejo Óptimo (0.200s)</div>
+          <div class="telemetry-val" id="telemetry-verstappen-diff" style="color: #5ce1e6;">--</div>
         </div>
       </div>
 

@@ -70,6 +70,9 @@ class RacingStorageManager {
       level: record.level || 'Reacción a Colores',
       timeMs: Math.round(record.timeMs),
       timeSeconds: Number((record.timeMs / 1000).toFixed(3)),
+      bestTimeMs: record.bestTimeMs ? Math.round(record.bestTimeMs) : Math.round(record.timeMs),
+      bestTimeSeconds: record.bestTimeMs ? Number((record.bestTimeMs / 1000).toFixed(3)) : Number((record.timeMs / 1000).toFixed(3)),
+      attempts: record.attempts || [],
       rating: record.rating || this.calculateRating(record.timeMs),
       createdAt: new Date().toISOString(),
       timestamp: Date.now()
@@ -150,7 +153,7 @@ class RacingStorageManager {
       return;
     }
 
-    const headers = ['Posición Ranking', 'Nivel / Modalidad', 'Nombre y Apellido', 'Email', 'Tiempo de Reacción (segundos)', 'Categoría', 'Fecha', 'Hora'];
+    const headers = ['Posición Ranking', 'Nivel / Modalidad', 'Nombre y Apellido', 'Email', 'Tiempo Promedio (seg)', 'Mejor Intento (seg)', 'Categoría', 'Fecha', 'Hora'];
     
     // Ordenados por mejor tiempo
     const sorted = [...records].sort((a, b) => a.timeMs - b.timeMs);
@@ -164,6 +167,7 @@ class RacingStorageManager {
       const safeEmail = `"${(item.email || '').replace(/"/g, '""')}"`;
       const safeRating = `"${(item.rating && item.rating.tier ? item.rating.tier : '').replace(/"/g, '""')}"`;
       const secondsStr = (item.timeMs / 1000).toFixed(3);
+      const bestSecondsStr = item.bestTimeMs ? (item.bestTimeMs / 1000).toFixed(3) : secondsStr;
 
       return [
         index + 1,
@@ -171,6 +175,7 @@ class RacingStorageManager {
         safeName,
         safeEmail,
         secondsStr,
+        bestSecondsStr,
         safeRating,
         `"${dateStr}"`,
         `"${timeStr}"`
