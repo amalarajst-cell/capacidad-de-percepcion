@@ -88,70 +88,56 @@
       </div>
     </section>
 
-    <!-- CUADRÍCULA: PODIO F1 + TABLA EN VIVO -->
-    <div class="admin-grid">
+    <!-- ========================================================================
+         SECCIÓN SUPERIOR: PODIO DE CAMPEONES TOP 3 (1°, 2°, 3°)
+         ======================================================================== -->
+    <section class="screen-card podium-stand-section">
+      <div class="podium-header-banner">
+        <div class="racing-badge-strip">PODIO DE CAMPEONES</div>
+        <h2 class="hero-title" style="font-size: clamp(1.8rem, 3.2vw, 2.5rem); margin: 6px 0;">TOP 3 <span>MEJORES REFLEJOS</span></h2>
+        <p class="podium-sub-desc">
+          Participantes con menor tiempo de reacción acumulados en la jornada del stand.
+        </p>
+      </div>
 
-      <!-- COLUMNA IZQUIERDA: PODIO F1 (TOP 3) -->
-      <aside class="screen-card podium-card-wrapper" style="display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div class="hero-banner" style="margin-bottom: 12px; text-align: left;">
-            <div class="racing-badge-strip">PODIO DE CAMPEONES</div>
-            <h2 class="hero-title" style="font-size: 1.8rem;">TOP 3 <span>MEJORES REFLEJOS</span></h2>
-          </div>
-
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
-            Los participantes con menor tiempo de reacción acumulados en la jornada.
-          </p>
-
-          <!-- Estructura del Podio -->
-          <div class="podium-container">
-            <!-- 2do Lugar (Plata) -->
-            <div class="podium-step silver">
-              <div class="podium-avatar">🥈</div>
-              <div class="podium-pillar">
-                <div class="podium-player-name" id="podium-p2-name">---</div>
-                <div class="podium-player-time" id="podium-p2-time">-- s</div>
-                <div class="podium-rank-num">2</div>
-              </div>
-            </div>
-
-            <!-- 1er Lugar (Oro) -->
-            <div class="podium-step gold">
-              <div class="podium-avatar">👑</div>
-              <div class="podium-pillar">
-                <div class="podium-player-name" id="podium-p1-name">---</div>
-                <div class="podium-player-time" id="podium-p1-time">-- s</div>
-                <div class="podium-rank-num">1</div>
-              </div>
-            </div>
-
-            <!-- 3er Lugar (Bronce) -->
-            <div class="podium-step bronze">
-              <div class="podium-avatar">🥉</div>
-              <div class="podium-pillar">
-                <div class="podium-player-name" id="podium-p3-name">---</div>
-                <div class="podium-player-time" id="podium-p3-time">-- s</div>
-                <div class="podium-rank-num">3</div>
-              </div>
-            </div>
+      <!-- Estructura del Podio Panorámico -->
+      <div class="podium-container podium-panoramic">
+        <!-- 2do Lugar (Plata) -->
+        <div class="podium-step silver">
+          <div class="podium-ordinal-badge badge-silver">2°</div>
+          <div class="podium-pillar">
+            <div class="podium-player-name" id="podium-p2-name">---</div>
+            <div class="podium-player-time" id="podium-p2-time">-- s</div>
+            <div class="podium-rank-num">2°</div>
           </div>
         </div>
 
-        <!-- Botones de Utilidad Rápida -->
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
-          <button type="button" id="btn-add-demo-data" class="btn-admin-action" style="background: rgba(0, 102, 255, 0.15); color: var(--racing-cyan); border: 1px solid var(--racing-blue);">
-            <span>🎲</span>
-            <span>Cargar datos de prueba</span>
-          </button>
-          <button type="button" id="btn-clear-database" class="btn-admin-action btn-clear-db">
-            <span>🗑️</span>
-            <span>Reiniciar todos los registros</span>
-          </button>
+        <!-- 1er Lugar (Oro) -->
+        <div class="podium-step gold">
+          <div class="podium-ordinal-badge badge-gold">1°</div>
+          <div class="podium-pillar">
+            <div class="podium-player-name" id="podium-p1-name">---</div>
+            <div class="podium-player-time" id="podium-p1-time">-- s</div>
+            <div class="podium-rank-num">1°</div>
+          </div>
         </div>
-      </aside>
 
-      <!-- COLUMNA DERECHA: TABLA EN VIVO Y EXPORTACIÓN -->
-      <section class="screen-card table-card-wrapper">
+        <!-- 3er Lugar (Bronce) -->
+        <div class="podium-step bronze">
+          <div class="podium-ordinal-badge badge-bronze">3°</div>
+          <div class="podium-pillar">
+            <div class="podium-player-name" id="podium-p3-name">---</div>
+            <div class="podium-player-time" id="podium-p3-time">-- s</div>
+            <div class="podium-rank-num">3°</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECCIÓN INFERIOR: CLASIFICACIÓN GENERAL Y TELEMETRÍA (ANCHO COMPLETO)
+         ======================================================================== -->
+    <section class="screen-card table-card-wrapper" style="margin-top: 24px;">
         <!-- Barra de herramientas de Admin -->
         <div class="admin-toolbar">
           <!-- Filtro por Nivel -->
@@ -195,9 +181,16 @@
             </tbody>
           </table>
         </div>
+        <!-- Barra de Utilidades Administrativas al pie de la tabla -->
+        <div class="admin-table-footer">
+          <button type="button" id="btn-add-demo-data" class="btn-admin-subtle">
+            <span>🎲 Cargar datos de prueba</span>
+          </button>
+          <button type="button" id="btn-clear-database" class="btn-admin-subtle btn-clear-subtle">
+            <span>🗑️ Reiniciar base de datos</span>
+          </button>
+        </div>
       </section>
-
-    </div>
   </main>
 
   <!-- Scripts -->
