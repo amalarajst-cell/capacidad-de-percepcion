@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (liveNoticeBadge) {
         liveNoticeBadge.style.display = 'inline-flex';
-        liveNoticeBadge.textContent = `¡Nuevo tiempo (${payload.record.level || 'F1'}): ${payload.record.name} (${payload.record.timeMs}ms)!`;
+        const sec = (payload.record.timeMs / 1000).toFixed(3);
+        liveNoticeBadge.textContent = `¡Nuevo tiempo (${payload.record.level || 'Colores'}): ${payload.record.name} (${sec} s)!`;
         setTimeout(() => {
           liveNoticeBadge.style.display = 'none';
         }, 5000);
@@ -83,22 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
     metricTotal.textContent = total;
 
     if (total === 0) {
-      metricBest.textContent = '-- ms';
+      metricBest.textContent = '-- s';
       metricBestHolder.textContent = 'Sin registros en este filtro';
-      metricAvg.textContent = '-- ms';
+      metricAvg.textContent = '-- s';
       return;
     }
 
     // Mejor tiempo
     const sorted = [...filtered].sort((a, b) => a.timeMs - b.timeMs);
     const bestRecord = sorted[0];
-    metricBest.textContent = `${bestRecord.timeMs} ms`;
-    metricBestHolder.textContent = `Líder: ${bestRecord.name} (${bestRecord.level || 'F1'})`;
+    const bestSec = (bestRecord.timeMs / 1000).toFixed(3);
+    metricBest.textContent = `${bestSec} s`;
+    metricBestHolder.textContent = `Líder: ${bestRecord.name} (${bestRecord.level || 'Colores'})`;
 
     // Promedio
     const sum = filtered.reduce((acc, curr) => acc + curr.timeMs, 0);
-    const avg = Math.round(sum / total);
-    metricAvg.textContent = `${avg} ms`;
+    const avgSec = ((sum / total) / 1000).toFixed(3);
+    metricAvg.textContent = `${avgSec} s`;
   }
 
   // Actualizar Podio
@@ -109,28 +111,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1er Puesto
     if (sorted[0]) {
       podiumP1Name.textContent = sorted[0].name;
-      podiumP1Time.textContent = `${sorted[0].timeMs} ms`;
+      podiumP1Time.textContent = `${(sorted[0].timeMs / 1000).toFixed(3)} s`;
     } else {
       podiumP1Name.textContent = '---';
-      podiumP1Time.textContent = '-- ms';
+      podiumP1Time.textContent = '-- s';
     }
 
     // 2do Puesto
     if (sorted[1]) {
       podiumP2Name.textContent = sorted[1].name;
-      podiumP2Time.textContent = `${sorted[1].timeMs} ms`;
+      podiumP2Time.textContent = `${(sorted[1].timeMs / 1000).toFixed(3)} s`;
     } else {
       podiumP2Name.textContent = '---';
-      podiumP2Time.textContent = '-- ms';
+      podiumP2Time.textContent = '-- s';
     }
 
     // 3er Puesto
     if (sorted[2]) {
       podiumP3Name.textContent = sorted[2].name;
-      podiumP3Time.textContent = `${sorted[2].timeMs} ms`;
+      podiumP3Time.textContent = `${(sorted[2].timeMs / 1000).toFixed(3)} s`;
     } else {
       podiumP3Name.textContent = '---';
-      podiumP3Time.textContent = '-- ms';
+      podiumP3Time.textContent = '-- s';
     }
   }
 
@@ -172,7 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const tierText = (item.rating && item.rating.tier) ? item.rating.tier : 'Participante';
       const tierBadge = (item.rating && item.rating.classBadge) ? item.rating.classBadge : 'rank-normal';
-      const levelLabel = item.level === 'Solo Colores' ? '🎨 Colores' : '🚦 F1';
+      const levelLabel = (item.level === 'Reacción a Colores' || item.level === 'Solo Colores') ? '🎨 Colores' : '🚦 F1';
+      const timeSec = (item.timeMs / 1000).toFixed(3);
 
       return `
         <tr class="${isNew}" data-id="${item.id}">
@@ -192,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${item.email ? escapeHtml(item.email) : '<span style="color: #475569;">No especificado</span>'}
           </td>
           <td>
-            <span class="table-time-cell">${item.timeMs} ms</span>
+            <span class="table-time-cell">${timeSec} s</span>
           </td>
           <td>
             <span class="result-badge ${tierBadge}" style="font-size: 0.75rem; padding: 4px 10px;">${tierText}</span>

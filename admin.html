@@ -51,7 +51,7 @@
   <!-- ==========================================================================
        CONTENIDO PRINCIPAL: TELEMETRÍA Y LEADERBOARD
        ========================================================================== -->
-  <main class="main-wrapper" style="max-width: 1240px;">
+  <main class="main-wrapper admin-screen-container">
 
     <!-- FILA DE MÉTRICAS GLOBALES DEL STAND -->
     <section class="metrics-row">
@@ -63,13 +63,13 @@
 
       <div class="metric-card" style="border-color: rgba(255, 215, 0, 0.4);">
         <div class="metric-title" style="color: #FFD700;">RÉCORD DEL DÍA 🏆</div>
-        <div class="metric-value" id="metric-best-time" style="color: #FFD700;">-- ms</div>
+        <div class="metric-value" id="metric-best-time" style="color: #FFD700;">-- s</div>
         <div class="metric-sub" id="metric-best-holder">Sin registros aún</div>
       </div>
 
       <div class="metric-card">
         <div class="metric-title">TIEMPO PROMEDIO</div>
-        <div class="metric-value" id="metric-avg-time">-- ms</div>
+        <div class="metric-value" id="metric-avg-time">-- s</div>
         <div class="metric-sub">Velocidad media de reacción</div>
       </div>
     </section>
@@ -96,7 +96,7 @@
               <div class="podium-avatar">🥈</div>
               <div class="podium-pillar">
                 <div class="podium-player-name" id="podium-p2-name">---</div>
-                <div class="podium-player-time" id="podium-p2-time">-- ms</div>
+                <div class="podium-player-time" id="podium-p2-time">-- s</div>
                 <div class="podium-rank-num">2</div>
               </div>
             </div>
@@ -106,7 +106,7 @@
               <div class="podium-avatar">👑</div>
               <div class="podium-pillar">
                 <div class="podium-player-name" id="podium-p1-name">---</div>
-                <div class="podium-player-time" id="podium-p1-time">-- ms</div>
+                <div class="podium-player-time" id="podium-p1-time">-- s</div>
                 <div class="podium-rank-num">1</div>
               </div>
             </div>
@@ -116,7 +116,7 @@
               <div class="podium-avatar">🥉</div>
               <div class="podium-pillar">
                 <div class="podium-player-name" id="podium-p3-name">---</div>
-                <div class="podium-player-time" id="podium-p3-time">-- ms</div>
+                <div class="podium-player-time" id="podium-p3-time">-- s</div>
                 <div class="podium-rank-num">3</div>
               </div>
             </div>
@@ -172,7 +172,7 @@
                 <th>NIVEL</th>
                 <th>CONDUCTOR/A / HORA</th>
                 <th>CORREO ELECTRÓNICO</th>
-                <th>TIEMPO</th>
+                <th>TIEMPO (seg)</th>
                 <th>CATEGORÍA</th>
                 <th style="text-align: right;">ACCIÓN</th>
               </tr>

@@ -410,11 +410,13 @@ document.addEventListener('DOMContentLoaded', () => {
     screenTest.style.display = 'none';
     screenResults.style.display = 'block';
 
+    const timeInSeconds = (timeMs / 1000).toFixed(3);
+
     if (resultLevelBadge) {
       resultLevelBadge.textContent = 'REACCIÓN A COLORES';
     }
     if (resultTimeNumber) {
-      resultTimeNumber.textContent = timeMs;
+      resultTimeNumber.textContent = timeInSeconds;
     }
     if (resultBadge) {
       resultBadge.className = `result-badge ${rating.classBadge}`;
@@ -434,7 +436,8 @@ document.addEventListener('DOMContentLoaded', () => {
       telemetryPlayerName.textContent = currentPlayer.name;
     }
     if (telemetryDiff) {
-      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste el récord!' : `+${timeMs - 200} ms`;
+      const diffSec = ((timeMs - 200) / 1000).toFixed(3);
+      telemetryDiff.textContent = (timeMs <= 200) ? '¡Superaste el récord!' : `+${diffSec} s`;
     }
     if (telemetrySpeedRank) {
       telemetrySpeedRank.textContent = timeMs < 250 ? 'Sobrenatural' : (timeMs < 350 ? 'Avanzado' : 'Normal');

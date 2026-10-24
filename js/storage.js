@@ -69,6 +69,7 @@ class RacingStorageManager {
       email: record.email.trim().toLowerCase(),
       level: record.level || 'Reacción a Colores',
       timeMs: Math.round(record.timeMs),
+      timeSeconds: Number((record.timeMs / 1000).toFixed(3)),
       rating: record.rating || this.calculateRating(record.timeMs),
       createdAt: new Date().toISOString(),
       timestamp: Date.now()
@@ -149,7 +150,7 @@ class RacingStorageManager {
       return;
     }
 
-    const headers = ['Posición Ranking', 'Nivel / Modalidad', 'Nombre y Apellido', 'Email', 'Tiempo de Reacción (ms)', 'Categoría', 'Fecha', 'Hora'];
+    const headers = ['Posición Ranking', 'Nivel / Modalidad', 'Nombre y Apellido', 'Email', 'Tiempo de Reacción (segundos)', 'Categoría', 'Fecha', 'Hora'];
     
     // Ordenados por mejor tiempo
     const sorted = [...records].sort((a, b) => a.timeMs - b.timeMs);
@@ -158,17 +159,18 @@ class RacingStorageManager {
       const dateObj = new Date(item.createdAt);
       const dateStr = dateObj.toLocaleDateString();
       const timeStr = dateObj.toLocaleTimeString();
-      const safeLevel = `"${(item.level || 'Semáforo F1').replace(/"/g, '""')}"`;
+      const safeLevel = `"${(item.level || 'Reacción a Colores').replace(/"/g, '""')}"`;
       const safeName = `"${(item.name || '').replace(/"/g, '""')}"`;
       const safeEmail = `"${(item.email || '').replace(/"/g, '""')}"`;
       const safeRating = `"${(item.rating && item.rating.tier ? item.rating.tier : '').replace(/"/g, '""')}"`;
+      const secondsStr = (item.timeMs / 1000).toFixed(3);
 
       return [
         index + 1,
         safeLevel,
         safeName,
         safeEmail,
-        item.timeMs,
+        secondsStr,
         safeRating,
         `"${dateStr}"`,
         `"${timeStr}"`

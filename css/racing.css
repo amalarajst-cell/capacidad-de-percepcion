@@ -1643,41 +1643,266 @@ html, body {
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN (Móvil / Tablet / Pantalla de Stand)
+   ADMIN LAYOUT PARA PANTALLA DE COMPUTADORA Y TV DEL STAND
    ========================================================================== */
-@media (max-width: 640px) {
+.admin-screen-container {
+  max-width: 1680px !important;
+  width: 96% !important;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+@media (min-width: 1024px) {
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    padding: 22px 28px;
+    border-radius: 16px;
+  }
+
+  .metric-title {
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+  }
+
+  .metric-value {
+    font-size: clamp(2.6rem, 3.2vw, 3.8rem);
+    margin: 8px 0;
+  }
+
+  .podium-container {
+    padding: 24px 10px 10px;
+    min-height: 290px;
+  }
+
+  .race-table th {
+    font-size: 1rem;
+    padding: 16px 18px;
+    letter-spacing: 1.5px;
+  }
+
+  .race-table td {
+    font-size: 1rem;
+    padding: 16px 18px;
+  }
+
+  .table-time-cell {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .admin-grid {
+    grid-template-columns: 430px 1fr;
+    gap: 28px;
+  }
+  .podium-container {
+    min-height: 330px;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN PARA TELÉFONOS CELULARES (MÓVIL VERTICAL)
+   ========================================================================== */
+@media (max-width: 680px) {
+  .main-wrapper {
+    padding: 10px 8px 30px;
+  }
+
+  .race-header {
+    padding: 4px 0;
+  }
+
   .header-container {
-    padding: 10px 14px;
+    padding: 8px 12px;
   }
+
   .school-logo-img {
-    height: 42px;
-  }
-  .brand-main-title {
-    font-size: 1.3rem;
-  }
-  .brand-sub-title {
-    font-size: 0.65rem;
-  }
-  .f1-lights-gantry {
-    gap: 8px;
-    padding: 16px 12px;
-  }
-  .f1-bulb {
-    width: 36px;
     height: 36px;
+    padding: 2px 5px;
+  }
+
+  .brand-main-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+  }
+
+  .brand-sub-title {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+  }
+
+  .screen-card {
+    padding: 14px 10px;
+    border-radius: 16px;
+  }
+
+  .hero-banner {
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.7rem, 7vw, 2.1rem);
+    margin-bottom: 6px;
+  }
+
+  .hero-desc {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .login-form {
+    gap: 14px;
+  }
+
+  .form-group {
+    gap: 5px;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
+  }
+
+  .race-input {
+    padding: 12px 14px 12px 42px;
+    font-size: 0.98rem;
+    border-radius: 10px;
+  }
+
+  .btn-ignition {
+    padding: 14px 20px;
+    font-size: 1.2rem;
+    margin-top: 6px;
+  }
+
+  /* Desafío Cromático en Pantalla de Celular */
+  .test-section-chromatic {
+    padding: 4px 0 16px;
+  }
+
+  .player-active-bar {
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .player-info-tag {
+    font-size: 0.95rem;
+    gap: 6px;
+  }
+
+  .player-info-tag .label {
+    font-size: 0.78rem;
+  }
+
+  .chromatic-stage-card {
+    padding: 14px 10px 16px;
+    border-radius: 18px;
     border-width: 2px;
   }
-  .f1-light-column {
-    padding: 6px;
+
+  .chromatic-badge-pill {
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .chromatic-orb-wrapper {
+    min-height: 84px;
+    margin-bottom: 8px;
+  }
+
+  .chromatic-orb {
+    width: 80px;
+    height: 80px;
+  }
+
+  .chromatic-title {
+    font-size: 1.55rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 2px;
+  }
+
+  .chromatic-desc {
+    font-size: 0.82rem;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    max-width: 100%;
+  }
+
+  .btn-start-chromatic {
+    padding: 9px 24px;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+  }
+
+  /* Botones en Celular: 2x2 para fácil toque con pulgares */
+  .chromatic-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    margin-top: 10px;
   }
-  .reaction-touch-zone {
-    min-height: 200px;
+
+  .chromatic-btn {
+    min-height: 80px;
+    padding: 8px 6px;
+    border-radius: 12px;
   }
+
+  .color-concentric-ring {
+    width: 32px;
+    height: 32px;
+    margin: 2px 0 4px;
+    border-width: 3px;
+  }
+
+  .color-concentric-ring::after {
+    width: 12px;
+    height: 12px;
+    border-width: 2.5px;
+  }
+
+  .btn-color-name {
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+  }
+
+  .btn-color-role {
+    font-size: 0.68rem;
+  }
+
+  /* Resultados en Celular */
+  .time-display-box {
+    padding: 14px 20px;
+    border-radius: 16px;
+    max-width: 100%;
+  }
+
+  .time-number {
+    font-size: clamp(2.8rem, 14vw, 4.2rem);
+  }
+
   .telemetry-row {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
+
   .results-actions {
     flex-direction: column;
+    gap: 10px;
   }
 }
