@@ -1,6 +1,6 @@
-# 🏎️ Capacidad de Percepción - Test de Reacción a Colores para Stand
+# 🏎️ Centro de Formación Profesional 412 | Manejo Seguro - Capacidad de Percepción
 
-Aplicación web interactiva de alta velocidad diseñada para stands en la vía pública o exposiciones educativas, con estética de alta energía tipo **Motorsport / Dark Mode** y los colores institucionales (**Azul Marino, Amarillo Competición y Blanco**).
+Aplicación web interactiva de alta velocidad diseñada para el **Centro de Formación Profesional 412 (Manejo Seguro)** para stands en la vía pública o exposiciones educativas, con estética de alta energía tipo **Motorsport / Dark Mode** y los colores institucionales (**Azul Marino, Amarillo Competición y Blanco**).
 
 ---
 
