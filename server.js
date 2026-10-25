@@ -69,6 +69,18 @@ function broadcast(event) {
 }
 
 /* ----------------------------- Validación ----------------------------- */
+function sanitizeAttempt(item) {
+  if (typeof item === 'number') return Number.isFinite(item) ? item : null;
+  if (!item || typeof item !== 'object') return null;
+  const timeMs = Number(item.timeMs);
+  if (!Number.isFinite(timeMs)) return null;
+  return {
+    attempt: Number.isFinite(Number(item.attempt)) ? Number(item.attempt) : 0,
+    timeMs: Math.round(timeMs),
+    color: typeof item.color === 'string' ? item.color.slice(0, 20) : ''
+  };
+}
+
 function sanitizeRecord(raw) {
   if (!raw || typeof raw !== 'object') return null;
   const id = typeof raw.id === 'string' ? raw.id.slice(0, 64) : '';
@@ -78,7 +90,7 @@ function sanitizeRecord(raw) {
 
   const bestTimeMs = Number.isFinite(Number(raw.bestTimeMs)) ? Number(raw.bestTimeMs) : timeMs;
   const attempts = Array.isArray(raw.attempts)
-    ? raw.attempts.slice(0, 20).map(Number).filter(Number.isFinite)
+    ? raw.attempts.slice(0, 20).map(sanitizeAttempt).filter(Boolean)
     : [];
 
   return {
