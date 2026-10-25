@@ -11,15 +11,26 @@
   <link rel="shortcut icon" href="assets/logo.png" type="image/png">
 
   <style>
-    /* Estilos específicos para Cartelera del Stand (Pantalla e Impresión A4) */
+    /* ==========================================================================
+       CARTELERA DEL STAND (FONDO BLANCO / PRINT-READY)
+       ========================================================================== */
+    body {
+      background-color: #F1F5F9 !important;
+      color: #0F172A !important;
+      font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Barra Superior de Controles (Sticky) */
     .stand-controls-bar {
-      background: rgba(10, 20, 36, 0.95);
-      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      background: #FFFFFF;
+      border-bottom: 2px solid #E2E8F0;
       padding: 12px 20px;
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     }
 
     .stand-controls-container {
@@ -39,32 +50,34 @@
     }
 
     .tab-btn {
-      padding: 8px 16px;
+      padding: 9px 16px;
       border-radius: 8px;
       font-family: var(--font-race);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 800;
       letter-spacing: 0.5px;
-      background: rgba(255, 255, 255, 0.08);
-      color: #94A3B8;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #F8FAFC;
+      color: #475569;
+      border: 1.5px solid #CBD5E1;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      text-decoration: none;
     }
 
     .tab-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #FFFFFF;
+      background: #E2E8F0;
+      color: #0F172A;
+      border-color: #94A3B8;
     }
 
     .tab-btn.active {
-      background: rgba(255, 215, 0, 0.15);
-      color: #FFD700;
-      border-color: #FFD700;
-      box-shadow: 0 0 14px rgba(255, 215, 0, 0.3);
+      background: #FEF3C7;
+      color: #B45309;
+      border-color: #F59E0B;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
     }
 
     .stand-actions {
@@ -74,17 +87,17 @@
     }
 
     .btn-print-action {
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-      color: #000;
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #FFFFFF;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: 8px;
       font-family: var(--font-race);
       font-size: 0.95rem;
       font-weight: 900;
       letter-spacing: 0.8px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -93,26 +106,26 @@
 
     .btn-print-action:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+      box-shadow: 0 6px 18px rgba(217, 119, 6, 0.5);
     }
 
     /* Contenedor de Láminas / Hojas del Stand */
     .stand-sheets-wrapper {
       max-width: 960px;
-      margin: 24px auto 60px;
+      margin: 28px auto 60px;
       padding: 0 16px;
       display: flex;
       flex-direction: column;
-      gap: 40px;
+      gap: 36px;
     }
 
-    /* Lámina Individual A4 / Póster */
+    /* Lámina Individual A4 / Póster Fondo Blanco */
     .stand-poster-sheet {
-      background: radial-gradient(circle at 50% 10%, rgba(15, 26, 46, 0.98) 0%, rgba(6, 12, 22, 0.99) 100%);
-      border: 3px solid rgba(255, 215, 0, 0.4);
-      border-radius: 24px;
-      padding: 36px 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.12);
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 20px;
+      padding: 36px 42px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
       position: relative;
       overflow: hidden;
       display: flex;
@@ -128,7 +141,7 @@
       left: 0;
       right: 0;
       height: 6px;
-      background: linear-gradient(90deg, #FF1744 0%, #FFD700 50%, #00E676 100%);
+      background: linear-gradient(90deg, #EF4444 0%, #F59E0B 50%, #10B981 100%);
     }
 
     /* Header del Cartel */
@@ -136,9 +149,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 20px;
-      margin-bottom: 24px;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .poster-brand-info {
@@ -150,29 +163,28 @@
     .poster-brand-logo {
       height: 64px;
       object-fit: contain;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
     }
 
     .poster-titles h1 {
       font-family: var(--font-race);
       font-size: clamp(1.4rem, 2.5vw, 1.85rem);
       font-weight: 900;
-      color: #FFFFFF;
-      letter-spacing: 1px;
+      color: #0F172A;
+      letter-spacing: 0.8px;
       margin: 0;
       line-height: 1.15;
     }
 
     .poster-titles h1 span {
-      color: var(--accent-yellow);
+      color: #D97706;
     }
 
     .poster-titles .poster-sub {
       font-family: var(--font-race);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 800;
-      color: #5CE1E6;
-      letter-spacing: 2px;
+      color: #0284C7;
+      letter-spacing: 1.8px;
       text-transform: uppercase;
       margin-top: 4px;
       display: block;
@@ -181,21 +193,20 @@
     .poster-badge-live {
       padding: 8px 16px;
       border-radius: 8px;
-      background: rgba(255, 215, 0, 0.12);
-      border: 1.5px solid #FFD700;
-      color: #FFD700;
+      background: #FEF3C7;
+      border: 1.5px solid #F59E0B;
+      color: #B45309;
       font-family: var(--font-race);
-      font-size: 0.9rem;
-      font-weight: 800;
+      font-size: 0.88rem;
+      font-weight: 900;
       letter-spacing: 1px;
       text-align: center;
-      box-shadow: 0 0 16px rgba(255, 215, 0, 0.2);
     }
 
     /* Contenido de Página 1: QR Gigante */
     .qr-hero-card {
       text-align: center;
-      margin: 10px 0;
+      margin: 8px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -203,54 +214,53 @@
 
     .qr-main-callout {
       font-family: var(--font-race);
-      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-size: clamp(2rem, 3.8vw, 2.7rem);
       font-weight: 900;
-      color: #FFFFFF;
-      letter-spacing: 1.5px;
-      margin: 0 0 8px;
+      color: #0F172A;
+      letter-spacing: 1px;
+      margin: 0 0 6px;
       text-transform: uppercase;
       line-height: 1.1;
     }
 
     .qr-main-callout span {
-      color: #FFD700;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      color: #D97706;
     }
 
     .qr-instructions-sub {
       font-size: 1.15rem;
-      color: #CBD5E1;
-      max-width: 600px;
-      margin: 0 auto 24px;
-      line-height: 1.4;
+      color: #475569;
+      max-width: 620px;
+      margin: 0 auto 22px;
+      line-height: 1.45;
     }
 
     .qr-frame-box {
       background: #FFFFFF;
-      padding: 24px;
-      border-radius: 24px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.35);
-      border: 5px solid #FFD700;
+      padding: 22px;
+      border-radius: 22px;
+      box-shadow: 0 8px 30px rgba(217, 119, 6, 0.18), 0 2px 8px rgba(0,0,0,0.06);
+      border: 4px solid #D97706;
       display: inline-block;
       margin-bottom: 20px;
       position: relative;
     }
 
     .qr-frame-box img {
-      width: clamp(240px, 45vw, 320px);
-      height: clamp(240px, 45vw, 320px);
+      width: clamp(240px, 45vw, 310px);
+      height: clamp(240px, 45vw, 310px);
       display: block;
       image-rendering: pixelated;
     }
 
     .qr-frame-badge {
       position: absolute;
-      bottom: -15px;
+      bottom: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: #0B132B;
-      color: #FFD700;
-      border: 2px solid #FFD700;
+      background: #0F172A;
+      color: #FCD34D;
+      border: 2px solid #D97706;
       padding: 6px 18px;
       border-radius: 20px;
       font-family: var(--font-race);
@@ -258,15 +268,15 @@
       font-weight: 800;
       letter-spacing: 1px;
       white-space: nowrap;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     .qr-url-text {
       font-family: var(--font-race);
       font-size: 1.15rem;
-      font-weight: 800;
-      color: #5CE1E6;
-      letter-spacing: 1px;
+      font-weight: 900;
+      color: #0284C7;
+      letter-spacing: 0.8px;
       margin-top: 14px;
     }
 
@@ -275,14 +285,14 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1.5px solid #E2E8F0;
     }
 
     .qr-step-item {
-      background: rgba(11, 19, 43, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
       border-radius: 12px;
       padding: 14px;
       text-align: center;
@@ -296,32 +306,32 @@
     .qr-step-title {
       font-family: var(--font-race);
       font-size: 0.95rem;
-      font-weight: 800;
-      color: #FFD700;
+      font-weight: 900;
+      color: #B45309;
       margin-bottom: 4px;
     }
 
     .qr-step-desc {
-      font-size: 0.8rem;
-      color: #94A3B8;
-      line-height: 1.3;
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.35;
     }
 
     /* Contenido de Página 2: Guía de Registro e Instructivo */
     .guide-columns-layout {
       display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 30px;
+      grid-template-columns: 330px 1fr;
+      gap: 28px;
       align-items: center;
       margin: 10px 0;
     }
 
     .guide-image-container {
-      background: #0B132B;
-      border: 3px solid rgba(255, 215, 0, 0.4);
-      border-radius: 20px;
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 18px;
       padding: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
       text-align: center;
       position: relative;
     }
@@ -329,76 +339,76 @@
     .guide-image-container img {
       width: 100%;
       height: auto;
-      border-radius: 14px;
+      border-radius: 12px;
       display: block;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid #E2E8F0;
     }
 
     .guide-image-caption {
       margin-top: 10px;
       font-family: var(--font-race);
       font-size: 0.85rem;
-      font-weight: 800;
-      color: #FFD700;
+      font-weight: 900;
+      color: #B45309;
       letter-spacing: 0.5px;
     }
 
     .guide-steps-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .guide-step-card {
-      background: rgba(14, 25, 45, 0.85);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
       border-radius: 14px;
-      padding: 16px 20px;
+      padding: 15px 18px;
       display: flex;
-      gap: 16px;
+      gap: 14px;
       align-items: flex-start;
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
     .guide-step-card:hover {
-      border-color: rgba(255, 215, 0, 0.5);
-      transform: translateX(4px);
+      border-color: #D97706;
+      transform: translateX(3px);
     }
 
     .step-number-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-      color: #000;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #FFFFFF;
       font-family: var(--font-race);
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.3);
     }
 
     .step-content h3 {
       font-family: var(--font-race);
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #FFFFFF;
-      margin: 0 0 4px;
-      letter-spacing: 0.5px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #0F172A;
+      margin: 0 0 3px;
+      letter-spacing: 0.3px;
     }
 
     .step-content p {
       font-size: 0.9rem;
-      color: #CBD5E1;
+      color: #334155;
       margin: 0;
       line-height: 1.4;
     }
 
     .step-content strong {
-      color: #FFD700;
+      color: #B45309;
     }
 
     .activities-comparison-mini {
@@ -409,8 +419,8 @@
     }
 
     .activity-mini-pill {
-      background: rgba(10, 19, 34, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
       border-radius: 8px;
       padding: 8px 10px;
       display: flex;
@@ -420,13 +430,13 @@
     }
 
     .activity-mini-pill.colors {
-      border-color: rgba(92, 225, 230, 0.4);
-      color: #5CE1E6;
+      border-color: #0284C7;
+      color: #0284C7;
     }
 
     .activity-mini-pill.signals {
-      border-color: rgba(255, 183, 3, 0.4);
-      color: #FFB703;
+      border-color: #D97706;
+      color: #B45309;
     }
 
     /* Footer institucional del cartel */
@@ -434,15 +444,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-top: 1.5px solid #E2E8F0;
       padding-top: 14px;
-      margin-top: 20px;
-      font-size: 0.82rem;
+      margin-top: 18px;
+      font-size: 0.84rem;
       color: #64748B;
     }
 
     .poster-footer span strong {
-      color: #CBD5E1;
+      color: #0F172A;
     }
 
     /* ========================================================================
@@ -456,9 +466,7 @@
         margin: 0 !important;
       }
 
-      .stand-controls-bar,
-      .race-header,
-      .btn-nav {
+      .stand-controls-bar {
         display: none !important;
       }
 
@@ -477,7 +485,7 @@
         border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
-        padding: 30px !important;
+        padding: 24px 30px !important;
         background: #FFFFFF !important;
         color: #1E293B !important;
         display: flex !important;
@@ -485,105 +493,6 @@
 
       .stand-poster-sheet::before {
         display: none !important;
-      }
-
-      .poster-titles h1 {
-        color: #0F172A !important;
-      }
-
-      .poster-titles h1 span {
-        color: #D97706 !important;
-      }
-
-      .poster-titles .poster-sub {
-        color: #0284C7 !important;
-      }
-
-      .poster-badge-live {
-        background: #FEF3C7 !important;
-        color: #B45309 !important;
-        border-color: #F59E0B !important;
-      }
-
-      .qr-main-callout {
-        color: #0F172A !important;
-      }
-
-      .qr-main-callout span {
-        color: #D97706 !important;
-        text-shadow: none !important;
-      }
-
-      .qr-instructions-sub {
-        color: #475569 !important;
-      }
-
-      .qr-frame-box {
-        border-color: #D97706 !important;
-        box-shadow: none !important;
-      }
-
-      .qr-frame-badge {
-        background: #0F172A !important;
-        color: #FCD34D !important;
-      }
-
-      .qr-url-text {
-        color: #0284C7 !important;
-      }
-
-      .qr-step-item {
-        background: #F8FAFC !important;
-        border-color: #E2E8F0 !important;
-      }
-
-      .qr-step-title {
-        color: #B45309 !important;
-      }
-
-      .qr-step-desc {
-        color: #475569 !important;
-      }
-
-      .guide-image-container {
-        background: #F8FAFC !important;
-        border-color: #CBD5E1 !important;
-        box-shadow: none !important;
-      }
-
-      .guide-image-caption {
-        color: #B45309 !important;
-      }
-
-      .guide-step-card {
-        background: #F8FAFC !important;
-        border-color: #E2E8F0 !important;
-      }
-
-      .step-number-badge {
-        background: #D97706 !important;
-        color: #FFFFFF !important;
-      }
-
-      .step-content h3 {
-        color: #0F172A !important;
-      }
-
-      .step-content p {
-        color: #334155 !important;
-      }
-
-      .step-content strong {
-        color: #B45309 !important;
-      }
-
-      .activity-mini-pill {
-        background: #FFFFFF !important;
-      }
-
-      .poster-footer {
-        border-top-color: #CBD5E1 !important;
-        color: #64748B !important;
       }
     }
 
@@ -645,7 +554,7 @@
   <main class="stand-sheets-wrapper">
 
     <!-- ======================================================================
-         LÁMINA 1: PÓSTER GIGANTE DEL CÓDIGO QR DEL STAND
+         LÁMINA 1: PÓSTER GIGANTE DEL CÓDIGO QR DEL STAND (FONDO BLANCO)
          ====================================================================== -->
     <article class="stand-poster-sheet" id="sheet-page-1">
       <!-- Encabezado Oficial -->
@@ -711,7 +620,7 @@
     </article>
 
     <!-- ======================================================================
-         LÁMINA 2: GUÍA DE REGISTRO E INSTRUCTIVO PASO A PASO
+         LÁMINA 2: GUÍA DE REGISTRO E INSTRUCTIVO PASO A PASO (FONDO BLANCO)
          ====================================================================== -->
     <article class="stand-poster-sheet" id="sheet-page-2">
       <!-- Encabezado Oficial -->
