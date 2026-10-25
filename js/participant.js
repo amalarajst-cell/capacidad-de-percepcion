@@ -397,13 +397,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof SENALES_DATA === 'undefined' || !Array.isArray(SENALES_DATA) || SENALES_DATA.length === 0) {
       return;
     }
-    if (signalsPool.length < 6) {
+    if (signalsPool.length < 10) {
       signalsPool = shuffleArray(SENALES_DATA);
     }
 
     currentSignalOptions = [];
     const usedIds = new Set();
-    while (currentSignalOptions.length < 4 && signalsPool.length > 0) {
+    while (currentSignalOptions.length < 6 && signalsPool.length > 0) {
       const s = signalsPool.shift();
       if (!usedIds.has(s.id)) {
         usedIds.add(s.id);
@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Teclas para botones de opciones (1, 2, 3, 4)
+    // Teclas para botones de opciones (1, 2, 3, 4, 5, 6)
     if (currentLevel === 'Memotest Vial (Señales)') {
       if (key === '1') {
         e.preventDefault();
@@ -901,6 +901,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (key === '4') {
         e.preventDefault();
         handleSignalSelection(3);
+      } else if (key === '5') {
+        e.preventDefault();
+        handleSignalSelection(4);
+      } else if (key === '6') {
+        e.preventDefault();
+        handleSignalSelection(5);
       }
     } else {
       if (key === '1' || key === 'r') {
