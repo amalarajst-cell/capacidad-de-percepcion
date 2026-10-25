@@ -4,7 +4,10 @@
  */
 
 const STORAGE_KEY = 'cfl_reaction_participants_v1';
+const PENDING_KEY = 'cfl_pending_sync_v1';
 const CHANNEL_NAME = 'cfl_racing_stand_sync';
+const API_RECORDS = 'api/records';
+const API_STREAM = 'api/stream';
 
 class RacingStorageManager {
   constructor() {
@@ -29,6 +32,127 @@ class RacingStorageManager {
         this.notifyListeners({ type: 'STORAGE_UPDATED', data: this.getAll() });
       }
     });
+
+    // Sincronización entre dispositivos vía servidor del stand (si está disponible)
+    this.serverOnline = false;
+    this.eventSource = null;
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      this.initServerSync();
+    }
+  }
+
+  /* ---------------- Sincronización con el servidor del stand ---------------- */
+  async initServerSync() {
+    const synced = await this.fullSync();
+    if (!synced || typeof EventSource === 'undefined') return;
+
+    this.eventSource = new EventSource(API_STREAM);
+    // Al reconectar tras un corte de red, se vuelve a sincronizar todo
+    this.eventSource.onopen = () => { this.fullSync(); };
+    this.eventSource.onerror = () => { this.serverOnline = false; };
+    this.eventSource.onmessage = (event) => {
+      try {
+        this.applyServerEvent(JSON.parse(event.data));
+      } catch (err) {
+        console.warn('Evento del servidor inválido', err);
+      }
+    };
+  }
+
+  /* Descarga los registros del servidor y envía los pendientes */
+  async fullSync() {
+    try {
+      const res = await fetch(API_RECORDS, { cache: 'no-store' });
+      if (!res.ok) return false;
+      const serverRecords = await res.json();
+      if (!Array.isArray(serverRecords)) return false;
+
+      this.serverOnline = true;
+      const serverIds = new Set(serverRecords.map(r => r.id));
+      const pending = this.getPending().filter(r => !serverIds.has(r.id));
+      this.setPending([]);
+      pending.forEach(r => this.pushToServer(r));
+
+      const merged = [...pending, ...serverRecords].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      this.writeLocal(merged);
+      this.notifyListeners({ type: 'SYNCED', allRecords: merged });
+      return true;
+    } catch (err) {
+      this.serverOnline = false;
+      return false;
+    }
+  }
+
+  applyServerEvent(event) {
+    const current = this.getAll();
+    let updated = current;
+
+    if (event.type === 'NEW_RECORD' && event.record) {
+      if (current.some(r => r.id === event.record.id)) return; // eco de nuestro propio envío
+      updated = [event.record, ...current];
+    } else if (event.type === 'CLEARED_ALL') {
+      updated = [];
+    } else if (event.type === 'DELETED_ONE') {
+      updated = current.filter(r => r.id !== event.deletedId);
+    } else {
+      return;
+    }
+
+    this.writeLocal(updated);
+    this.notifyListeners({ ...event, allRecords: updated });
+  }
+
+  async pushToServer(record) {
+    try {
+      const res = await fetch(API_RECORDS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      this.serverOnline = true;
+    } catch (err) {
+      // Se reintentará en la próxima sincronización
+      const pending = this.getPending();
+      if (!pending.some(r => r.id === record.id)) {
+        this.setPending([record, ...pending]);
+      }
+    }
+  }
+
+  async deleteOnServer(path) {
+    if (!this.serverOnline) return;
+    try {
+      const res = await fetch(path, { method: 'DELETE' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    } catch (err) {
+      console.warn('No se pudo borrar en el servidor del stand', err);
+    }
+  }
+
+  getPending() {
+    try {
+      const data = localStorage.getItem(PENDING_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  setPending(list) {
+    try {
+      localStorage.setItem(PENDING_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.error('Error al guardar cola pendiente', e);
+    }
+  }
+
+  writeLocal(records) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    } catch (e) {
+      console.error('Error al guardar en localStorage', e);
+    }
   }
 
   /* Suscripción a cambios en tiempo real */
@@ -89,6 +213,7 @@ class RacingStorageManager {
         this.channel.postMessage(message);
       }
       this.notifyListeners(message);
+      this.pushToServer(newEntry);
       return newEntry;
     } catch (e) {
       console.error('Error al guardar en localStorage', e);
@@ -105,6 +230,8 @@ class RacingStorageManager {
         this.channel.postMessage(message);
       }
       this.notifyListeners(message);
+      this.setPending([]);
+      this.deleteOnServer(API_RECORDS);
       return true;
     } catch (e) {
       console.error('Error al limpiar registros', e);
@@ -123,6 +250,8 @@ class RacingStorageManager {
         this.channel.postMessage(message);
       }
       this.notifyListeners(message);
+      this.setPending(this.getPending().filter(r => r.id !== id));
+      this.deleteOnServer(API_RECORDS + '/' + encodeURIComponent(id));
       return true;
     } catch (e) {
       console.error('Error al eliminar registro', e);
