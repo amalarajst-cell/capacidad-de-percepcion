@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Y GUÍA DEL STAND | CFP 412 MANEJO SEGURO</title>
+  <meta name="description" content="Póster de Código QR y Guía de Registro para el Stand de Capacidad de Percepción - CFP 412 Manejo Seguro">
+
+  <!-- Estilos del Stand -->
+  <link rel="stylesheet" href="css/racing.css">
+  <link rel="shortcut icon" href="assets/logo.png" type="image/png">
+
+  <style>
+    /* Estilos específicos para Cartelera del Stand (Pantalla e Impresión A4) */
+    .stand-controls-bar {
+      background: rgba(10, 20, 36, 0.95);
+      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      padding: 12px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .stand-controls-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stand-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: var(--font-race);
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #94A3B8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 215, 0, 0.15);
+      color: #FFD700;
+      border-color: #FFD700;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.3);
+    }
+
+    .stand-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-print-action {
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: var(--font-race);
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-print-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    }
+
+    /* Contenedor de Láminas / Hojas del Stand */
+    .stand-sheets-wrapper {
+      max-width: 960px;
+      margin: 24px auto 60px;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* Lámina Individual A4 / Póster */
+    .stand-poster-sheet {
+      background: radial-gradient(circle at 50% 10%, rgba(15, 26, 46, 0.98) 0%, rgba(6, 12, 22, 0.99) 100%);
+      border: 3px solid rgba(255, 215, 0, 0.4);
+      border-radius: 24px;
+      padding: 36px 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.12);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 820px;
+    }
+
+    .stand-poster-sheet::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #FF1744 0%, #FFD700 50%, #00E676 100%);
+    }
+
+    /* Header del Cartel */
+    .poster-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .poster-brand-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .poster-brand-logo {
+      height: 64px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+
+    .poster-titles h1 {
+      font-family: var(--font-race);
+      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 1px;
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    .poster-titles h1 span {
+      color: var(--accent-yellow);
+    }
+
+    .poster-titles .poster-sub {
+      font-family: var(--font-race);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #5CE1E6;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .poster-badge-live {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255, 215, 0, 0.12);
+      border: 1.5px solid #FFD700;
+      color: #FFD700;
+      font-family: var(--font-race);
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-align: center;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.2);
+    }
+
+    /* Contenido de Página 1: QR Gigante */
+    .qr-hero-card {
+      text-align: center;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .qr-main-callout {
+      font-family: var(--font-race);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 1.5px;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .qr-main-callout span {
+      color: #FFD700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .qr-instructions-sub {
+      font-size: 1.15rem;
+      color: #CBD5E1;
+      max-width: 600px;
+      margin: 0 auto 24px;
+      line-height: 1.4;
+    }
+
+    .qr-frame-box {
+      background: #FFFFFF;
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.35);
+      border: 5px solid #FFD700;
+      display: inline-block;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .qr-frame-box img {
+      width: clamp(240px, 45vw, 320px);
+      height: clamp(240px, 45vw, 320px);
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .qr-frame-badge {
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0B132B;
+      color: #FFD700;
+      border: 2px solid #FFD700;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-family: var(--font-race);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .qr-url-text {
+      font-family: var(--font-race);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #5CE1E6;
+      letter-spacing: 1px;
+      margin-top: 14px;
+    }
+
+    /* 3 Pasos rápidos al pie del QR */
+    .qr-steps-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .qr-step-item {
+      background: rgba(11, 19, 43, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .qr-step-icon {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    .qr-step-title {
+      font-family: var(--font-race);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #FFD700;
+      margin-bottom: 4px;
+    }
+
+    .qr-step-desc {
+      font-size: 0.8rem;
+      color: #94A3B8;
+      line-height: 1.3;
+    }
+
+    /* Contenido de Página 2: Guía de Registro e Instructivo */
+    .guide-columns-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 30px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .guide-image-container {
+      background: #0B132B;
+      border: 3px solid rgba(255, 215, 0, 0.4);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      position: relative;
+    }
+
+    .guide-image-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      display: block;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .guide-image-caption {
+      margin-top: 10px;
+      font-family: var(--font-race);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #FFD700;
+      letter-spacing: 0.5px;
+    }
+
+    .guide-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .guide-step-card {
+      background: rgba(14, 25, 45, 0.85);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .guide-step-card:hover {
+      border-color: rgba(255, 215, 0, 0.5);
+      transform: translateX(4px);
+    }
+
+    .step-number-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      font-family: var(--font-race);
+      font-size: 1.25rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    }
+
+    .step-content h3 {
+      font-family: var(--font-race);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin: 0 0 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: #CBD5E1;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .step-content strong {
+      color: #FFD700;
+    }
+
+    .activities-comparison-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .activity-mini-pill {
+      background: rgba(10, 19, 34, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+
+    .activity-mini-pill.colors {
+      border-color: rgba(92, 225, 230, 0.4);
+      color: #5CE1E6;
+    }
+
+    .activity-mini-pill.signals {
+      border-color: rgba(255, 183, 3, 0.4);
+      color: #FFB703;
+    }
+
+    /* Footer institucional del cartel */
+    .poster-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: #64748B;
+    }
+
+    .poster-footer span strong {
+      color: #CBD5E1;
+    }
+
+    /* ========================================================================
+       MODO IMPRESIÓN / EXPORTACIÓN A PDF (A4 READY)
+       ======================================================================== */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      .stand-controls-bar,
+      .race-header,
+      .btn-nav {
+        display: none !important;
+      }
+
+      .stand-sheets-wrapper {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+      }
+
+      .stand-poster-sheet {
+        page-break-after: always !important;
+        break-after: page !important;
+        min-height: 100vh !important;
+        height: 100vh !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 30px !important;
+        background: #FFFFFF !important;
+        color: #1E293B !important;
+        display: flex !important;
+      }
+
+      .stand-poster-sheet::before {
+        display: none !important;
+      }
+
+      .poster-titles h1 {
+        color: #0F172A !important;
+      }
+
+      .poster-titles h1 span {
+        color: #D97706 !important;
+      }
+
+      .poster-titles .poster-sub {
+        color: #0284C7 !important;
+      }
+
+      .poster-badge-live {
+        background: #FEF3C7 !important;
+        color: #B45309 !important;
+        border-color: #F59E0B !important;
+      }
+
+      .qr-main-callout {
+        color: #0F172A !important;
+      }
+
+      .qr-main-callout span {
+        color: #D97706 !important;
+        text-shadow: none !important;
+      }
+
+      .qr-instructions-sub {
+        color: #475569 !important;
+      }
+
+      .qr-frame-box {
+        border-color: #D97706 !important;
+        box-shadow: none !important;
+      }
+
+      .qr-frame-badge {
+        background: #0F172A !important;
+        color: #FCD34D !important;
+      }
+
+      .qr-url-text {
+        color: #0284C7 !important;
+      }
+
+      .qr-step-item {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+      }
+
+      .qr-step-title {
+        color: #B45309 !important;
+      }
+
+      .qr-step-desc {
+        color: #475569 !important;
+      }
+
+      .guide-image-container {
+        background: #F8FAFC !important;
+        border-color: #CBD5E1 !important;
+        box-shadow: none !important;
+      }
+
+      .guide-image-caption {
+        color: #B45309 !important;
+      }
+
+      .guide-step-card {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+      }
+
+      .step-number-badge {
+        background: #D97706 !important;
+        color: #FFFFFF !important;
+      }
+
+      .step-content h3 {
+        color: #0F172A !important;
+      }
+
+      .step-content p {
+        color: #334155 !important;
+      }
+
+      .step-content strong {
+        color: #B45309 !important;
+      }
+
+      .activity-mini-pill {
+        background: #FFFFFF !important;
+      }
+
+      .poster-footer {
+        border-top-color: #CBD5E1 !important;
+        color: #64748B !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .guide-columns-layout {
+        grid-template-columns: 1fr;
+      }
+      .guide-image-container {
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .qr-steps-strip {
+        grid-template-columns: 1fr;
+      }
+      .stand-poster-sheet {
+        padding: 24px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE CONTROL DEL STAND (STICKY) -->
+  <aside class="stand-controls-bar">
+    <div class="stand-controls-container">
+      <div class="stand-tabs">
+        <button type="button" class="tab-btn active" id="tab-btn-page1">
+          <span>📱</span>
+          <span>PÁGINA 1: CÓDIGO QR</span>
+        </button>
+        <button type="button" class="tab-btn" id="tab-btn-page2">
+          <span>📋</span>
+          <span>PÁGINA 2: GUÍA DE REGISTRO</span>
+        </button>
+        <button type="button" class="tab-btn" id="tab-btn-both">
+          <span>📑</span>
+          <span>VER AMBAS (IMPRIMIR / PDF)</span>
+        </button>
+      </div>
+
+      <div class="stand-actions">
+        <button type="button" class="btn-print-action" id="btn-print-poster">
+          <span>🖨️</span>
+          <span>IMPRIMIR / GUARDAR EN PDF</span>
+        </button>
+        <a href="index.html" class="tab-btn" title="Ir al test">
+          <span>🏎️</span>
+          <span>IR AL TEST</span>
+        </a>
+        <a href="admin.html" class="tab-btn" title="Ir al leaderboard en vivo">
+          <span>🏆</span>
+          <span>LEADERBOARD</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENEDOR PRINCIPAL DE LÁMINAS -->
+  <main class="stand-sheets-wrapper">
+
+    <!-- ======================================================================
+         LÁMINA 1: PÓSTER GIGANTE DEL CÓDIGO QR DEL STAND
+         ====================================================================== -->
+    <article class="stand-poster-sheet" id="sheet-page-1">
+      <!-- Encabezado Oficial -->
+      <header class="poster-header">
+        <div class="poster-brand-info">
+          <img src="assets/logo_stand.png" alt="Logo CFP ASIMM" class="poster-brand-logo">
+          <div class="poster-titles">
+            <h1>CENTRO DE FORMACIÓN <span>PROFESIONAL 412</span></h1>
+            <span class="poster-sub">MANEJO SEGURO · SEGURIDAD VIAL</span>
+          </div>
+        </div>
+        <div class="poster-badge-live">
+          STAND EN VIVO 🔴
+        </div>
+      </header>
+
+      <!-- Llamado a la Acción y QR Gigante -->
+      <section class="qr-hero-card">
+        <h2 class="qr-main-callout">
+          MEDÍ TUS <span>REFLEJOS</span> AL VOLANTE
+        </h2>
+        <p class="qr-instructions-sub">
+          Escaneá el código QR con la cámara de tu celular, poné a prueba tu velocidad de percepción y figurá en tiempo real en la pantalla gigante del stand.
+        </p>
+
+        <!-- Marco con Código QR de Alta Definición -->
+        <div class="qr-frame-box">
+          <img src="assets/qr_stand.png" alt="Código QR Stand Manejo Seguro" id="qr-image-display">
+          <div class="qr-frame-badge">ESCANEA CON TU CÁMARA</div>
+        </div>
+
+        <div class="qr-url-text">
+          amalarajst-cell.github.io/capacidad-de-percepcion
+        </div>
+      </section>
+
+      <!-- 3 Pasos Rápidos -->
+      <section class="qr-steps-strip">
+        <div class="qr-step-item">
+          <div class="qr-step-icon">📲</div>
+          <div class="qr-step-title">1. ESCANEÁ</div>
+          <div class="qr-step-desc">Apuntá tu cámara al código. No requiere instalar ninguna aplicación.</div>
+        </div>
+
+        <div class="qr-step-item">
+          <div class="qr-step-icon">⚡</div>
+          <div class="qr-step-title">2. JUGÁ 5 INTENTOS</div>
+          <div class="qr-step-desc">Elegí tu actividad y reaccioná a máxima velocidad sin anticiparte.</div>
+        </div>
+
+        <div class="qr-step-item">
+          <div class="qr-step-icon">🏆</div>
+          <div class="qr-step-title">3. SUBÍ AL PODIO</div>
+          <div class="qr-step-desc">Tu tiempo promedio impacta al instante en el ranking de la pantalla gigante.</div>
+        </div>
+      </section>
+
+      <!-- Pie Institucional -->
+      <footer class="poster-footer">
+        <span><strong>CFP 412</strong> · Asociación Sindical de Motociclistas Mensajeros y Servicios (ASIMM)</span>
+        <span>Capacidad de Percepción Vial · Stand Interactivo</span>
+      </footer>
+    </article>
+
+    <!-- ======================================================================
+         LÁMINA 2: GUÍA DE REGISTRO E INSTRUCTIVO PASO A PASO
+         ====================================================================== -->
+    <article class="stand-poster-sheet" id="sheet-page-2">
+      <!-- Encabezado Oficial -->
+      <header class="poster-header">
+        <div class="poster-brand-info">
+          <img src="assets/logo_stand.png" alt="Logo CFP ASIMM" class="poster-brand-logo">
+          <div class="poster-titles">
+            <h1>CÓMO PARTICIPAR <span>EN EL STAND</span></h1>
+            <span class="poster-sub">INSTRUCTIVO DE REGISTRO Y ACTIVIDADES</span>
+          </div>
+        </div>
+        <div class="poster-badge-live">
+          GUÍA DEL PARTICIPANTE 📖
+        </div>
+      </header>
+
+      <!-- Contenido en 2 Columnas: Imagen Real + Pasos -->
+      <section class="guide-columns-layout">
+        <!-- Columna Izquierda: Captura Real de la Pantalla de Registro -->
+        <div class="guide-image-container">
+          <img src="assets/registro_guia.png" alt="Pantalla de Registro del Participante">
+          <div class="guide-image-caption">📱 PANTALLA DE REGISTRO INICIAL</div>
+        </div>
+
+        <!-- Columna Derecha: 4 Pasos Explicativos -->
+        <div class="guide-steps-list">
+          <!-- Paso 1 -->
+          <div class="guide-step-card">
+            <div class="step-number-badge">1</div>
+            <div class="step-content">
+              <h3>Ingresá tu Nombre y Apellido</h3>
+              <p>Completá tu nombre para que tu marca aparezca en el <strong>Podio F1</strong> y en la tabla de clasificación general en vivo.</p>
+            </div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="guide-step-card">
+            <div class="step-number-badge">2</div>
+            <div class="step-content">
+              <h3>Seleccioná tu Desafío</h3>
+              <p>Podés competir en cualquiera de las dos modalidades del stand:</p>
+              <div class="activities-comparison-mini">
+                <div class="activity-mini-pill colors">
+                  <span>🎨</span>
+                  <div>
+                    <strong>Reacción a Colores:</strong>
+                    <div>Rojo, Amarillo, Verde, Azul.</div>
+                  </div>
+                </div>
+                <div class="activity-mini-pill signals">
+                  <span>🚸</span>
+                  <div>
+                    <strong>Memotest Vial:</strong>
+                    <div>Reconocimiento de 6 señales viales.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="guide-step-card">
+            <div class="step-number-badge">3</div>
+            <div class="step-content">
+              <h3>Completá los 5 Intentos</h3>
+              <p>Presioná <strong>"Comenzar Intento"</strong> y concentrate. Cuando aparezca el estímulo, tocalo lo más rápido posible. <strong>¡No te anticipes!</strong> Las salidas en falso suman +1.000 s de penalización.</p>
+            </div>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="guide-step-card">
+            <div class="step-number-badge">4</div>
+            <div class="step-content">
+              <h3>Mirá tus Resultados en la Pantalla Gigante</h3>
+              <p>Al finalizar los 5 intentos, tu <strong>tiempo promedio</strong> se calcula automáticamente y se posiciona en el ranking del stand en tiempo real.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pie Institucional -->
+      <footer class="poster-footer">
+        <span><strong>Centro de Formación Profesional 412</strong> · Manejo Seguro</span>
+        <span>Demostración de Reflejos y Tiempos de Frenado</span>
+      </footer>
+    </article>
+
+  </main>
+
+  <!-- Lógica de navegación entre láminas y modo impresión -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const page1 = document.getElementById('sheet-page-1');
+      const page2 = document.getElementById('sheet-page-2');
+
+      const btnTab1 = document.getElementById('tab-btn-page1');
+      const btnTab2 = document.getElementById('tab-btn-page2');
+      const btnTabBoth = document.getElementById('tab-btn-both');
+      const btnPrint = document.getElementById('btn-print-poster');
+
+      function setActiveTab(activeBtn) {
+        [btnTab1, btnTab2, btnTabBoth].forEach(b => b.classList.remove('active'));
+        activeBtn.classList.add('active');
+      }
+
+      btnTab1.addEventListener('click', () => {
+        setActiveTab(btnTab1);
+        page1.style.display = 'flex';
+        page2.style.display = 'none';
+      });
+
+      btnTab2.addEventListener('click', () => {
+        setActiveTab(btnTab2);
+        page1.style.display = 'none';
+        page2.style.display = 'flex';
+      });
+
+      btnTabBoth.addEventListener('click', () => {
+        setActiveTab(btnTabBoth);
+        page1.style.display = 'flex';
+        page2.style.display = 'flex';
+      });
+
+      btnPrint.addEventListener('click', () => {
+        // Asegurar que ambas páginas estén visibles para imprimir
+        page1.style.display = 'flex';
+        page2.style.display = 'flex';
+        window.print();
+      });
+    });
+  </script>
+</body>
+</html>
