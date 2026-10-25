@@ -824,6 +824,16 @@ html, body {
   color: #ffb703;
 }
 
+.attempt-pip.error {
+  border-color: #ff1744;
+  background: rgba(255, 23, 68, 0.15);
+}
+
+.attempt-pip.error .pip-label,
+.attempt-pip.error .pip-val {
+  color: #ff5252;
+}
+
 /* Orbe Luminoso Central */
 .chromatic-orb-wrapper {
   position: relative;

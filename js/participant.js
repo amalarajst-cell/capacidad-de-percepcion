@@ -175,10 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const attemptNum = idx + 1;
       const recorded = roundAttempts.find(r => r.attempt === attemptNum);
 
-      item.pip.classList.remove('active', 'completed', 'best');
+      item.pip.classList.remove('active', 'completed', 'best', 'error');
 
       if (recorded) {
         item.pip.classList.add('completed');
+        if (recorded.isError) {
+          item.pip.classList.add('error');
+        }
         item.val.textContent = (recorded.timeMs / 1000).toFixed(3) + 's';
       } else if (attemptNum === currentAttempt) {
         item.pip.classList.add('active');
@@ -360,49 +363,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Anticipación / Salida en falso
+  // Anticipación / Salida en falso (se penaliza y continúa sin detener la ronda)
   function handleEarlyTouch() {
     clearAllTimers();
-    gameState = 'IDLE';
-
     window.racingAudio.playJumpStartAlert();
 
     if (chromaticCard) {
       chromaticCard.classList.remove('shake');
-      void chromaticCard.offsetWidth; // Force reflow
+      void chromaticCard.offsetWidth;
       chromaticCard.classList.add('shake');
     }
-
-    showAlert(`🚨 ¡SALIDA EN FALSO! Tocaste antes de tiempo en el intento ${currentAttempt}.`);
 
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-idle';
     }
 
-    if (btnStartRound) {
-      btnStartRound.className = 'btn-start-chromatic';
-    }
+    const penaltyMs = 1000;
+    showAlert(`🚨 ¡ANTICIPACIÓN! Presionaste antes de tiempo. Penalización de 1.000 s.`);
 
-    if (btnStartLabel) {
-      btnStartLabel.textContent = `REINTENTAR INTENTO ${currentAttempt}`;
-    }
-
-    if (stageTitle) {
-      stageTitle.textContent = '¡ANTICIPACIÓN DETECTADA!';
-    }
-
-    if (stageDesc) {
-      stageDesc.innerHTML = `Debés esperar a que el orbe se ilumine antes de presionar. Intento ${currentAttempt} de ${TOTAL_ATTEMPTS}.`;
-    }
-
-    updatePipsUI();
+    advanceAttempt(
+      {
+        attempt: currentAttempt,
+        timeMs: penaltyMs,
+        color: 'error',
+        isError: true
+      },
+      `🚨 ¡ANTICIPACIÓN DETECTADA!`,
+      `Presionaste antes de tiempo en el intento ${currentAttempt}. Penalización: <strong>1.000 s</strong>. Continuando...`,
+      1300
+    );
   }
 
-  // Color equivocado
+  // Color equivocado (se penaliza y continúa sin detener la ronda)
   function handleWrongColorTouch(chosenColor) {
     clearAllTimers();
-    gameState = 'IDLE';
-
     window.racingAudio.playWrongColorAlert();
 
     if (chromaticCard) {
@@ -411,44 +405,32 @@ document.addEventListener('DOMContentLoaded', () => {
       chromaticCard.classList.add('shake');
     }
 
-    const correctName = COLOR_DEFINITIONS[activeColor] ? COLOR_DEFINITIONS[activeColor].name : '';
-    const chosenName = COLOR_DEFINITIONS[chosenColor] ? COLOR_DEFINITIONS[chosenColor].name : '';
-
-    showAlert(`❌ ¡COLOR INCORRECTO! Era ${correctName} y presionaste ${chosenName}. Reintentá el intento ${currentAttempt}.`);
-
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-idle';
     }
 
-    if (btnStartRound) {
-      btnStartRound.className = 'btn-start-chromatic';
-    }
+    const correctName = COLOR_DEFINITIONS[activeColor] ? COLOR_DEFINITIONS[activeColor].name : '';
+    const chosenName = COLOR_DEFINITIONS[chosenColor] ? COLOR_DEFINITIONS[chosenColor].name : '';
+    const penaltyMs = 1000;
 
-    if (btnStartLabel) {
-      btnStartLabel.textContent = `REINTENTAR INTENTO ${currentAttempt}`;
-    }
+    showAlert(`❌ ¡COLOR INCORRECTO! Era ${correctName} y presionaste ${chosenName}. Penalización de 1.000 s.`);
 
-    if (stageTitle) {
-      stageTitle.textContent = '¡BOTÓN EQUIVOCADO!';
-    }
-
-    if (stageDesc) {
-      stageDesc.innerHTML = `El color era <strong>${correctName}</strong>. Mantené la concentración e intentá de nuevo.`;
-    }
-
-    updatePipsUI();
+    advanceAttempt(
+      {
+        attempt: currentAttempt,
+        timeMs: penaltyMs,
+        color: chosenColor,
+        isError: true
+      },
+      `❌ ¡BOTÓN INCORRECTO!`,
+      `El color era <strong>${correctName}</strong>. Penalización: <strong>1.000 s</strong>. Continuando...`,
+      1300
+    );
   }
 
   // Reacción exitosa en un intento
   function handleReactionSuccess(timeMs, matchedColor) {
     window.racingAudio.playTouchHit();
-
-    // Registrar intento actual
-    roundAttempts.push({
-      attempt: currentAttempt,
-      timeMs: timeMs,
-      color: matchedColor
-    });
 
     // Iluminar botón presionado
     const targetBtn = colorButtons[matchedColor];
@@ -456,6 +438,21 @@ document.addEventListener('DOMContentLoaded', () => {
       targetBtn.classList.add('glow-hit');
     }
 
+    advanceAttempt(
+      {
+        attempt: currentAttempt,
+        timeMs: timeMs,
+        color: matchedColor
+      },
+      `¡INTENTO ${currentAttempt} REGISTRADO!`,
+      `Tiempo: <strong>${(timeMs / 1000).toFixed(3)} s</strong>. ¡Preparate para el siguiente intento!`,
+      1100
+    );
+  }
+
+  // Avanzar intento o finalizar ronda completa (flujo continuo arcade)
+  function advanceAttempt(attemptData, title, desc, delayMs = 1100) {
+    roundAttempts.push(attemptData);
     updatePipsUI();
 
     // ¿Quedan intentos en la ronda?
@@ -469,11 +466,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (stageTitle) {
-        stageTitle.textContent = `¡INTENTO ${prevAttempt} REGISTRADO!`;
+        stageTitle.textContent = title;
       }
 
       if (stageDesc) {
-        stageDesc.innerHTML = `Tiempo: <strong>${(timeMs / 1000).toFixed(3)} s</strong>. ¡Preparate para el <strong>intento ${currentAttempt} de ${TOTAL_ATTEMPTS}</strong>!`;
+        stageDesc.innerHTML = desc;
       }
 
       if (btnStartRound) {
@@ -484,12 +481,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btnStartLabel.textContent = `PREPARANDO INTENTO ${currentAttempt}...`;
       }
 
-      // Transición automática al siguiente intento (fluidez tipo arcade de stand)
+      // Transición automática al siguiente intento (sin detener la actividad)
       nextAttemptTimeout = setTimeout(() => {
         clearButtonHighlights();
+        hideAlert();
         gameState = 'IDLE';
         handleStartRound();
-      }, 1100);
+      }, delayMs);
 
     } else {
       // ¡Ronda completa finalizada con los 5 intentos!
@@ -517,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setTimeout(() => {
         showResults(avgTimeMs, bestTimeMs, roundAttempts, rating);
-      }, 650);
+      }, 700);
     }
   }
 
@@ -567,14 +565,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Renderizar los 5 chips de intentos
     if (resultsAttemptsGrid) {
       resultsAttemptsGrid.innerHTML = attempts.map(item => {
-        const isBest = item.timeMs === bestTimeMs;
-        const colorDot = item.color === 'red' ? '#ff1744' : (item.color === 'yellow' ? '#ffb703' : (item.color === 'green' ? '#00e676' : '#2979ff'));
+        const isBest = item.timeMs === bestTimeMs && !item.isError;
+        let colorDot = '#2979ff';
+        if (item.isError) colorDot = '#ff1744';
+        else if (item.color === 'red') colorDot = '#ff1744';
+        else if (item.color === 'yellow') colorDot = '#ffb703';
+        else if (item.color === 'green') colorDot = '#00e676';
+
         const timeSec = (item.timeMs / 1000).toFixed(3);
+        const errorTag = item.isError ? ' ⚠️' : '';
         return `
-          <div class="attempt-result-chip ${isBest ? 'is-best' : ''}">
+          <div class="attempt-result-chip ${isBest ? 'is-best' : ''} ${item.isError ? 'is-penalized' : ''}">
             <div class="chip-header">
               <span class="chip-dot" style="background-color: ${colorDot};"></span>
-              <span class="chip-num">#${item.attempt}${isBest ? ' ★' : ''}</span>
+              <span class="chip-num">#${item.attempt}${isBest ? ' ★' : ''}${errorTag}</span>
             </div>
             <div class="chip-time">${timeSec}s</div>
           </div>
