@@ -2220,66 +2220,130 @@ html, body {
     margin-top: 6px;
   }
 
-  /* Desafío Cromático en Pantalla de Celular */
+  .activity-selector-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .activity-option-card {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .activity-option-card .act-icon {
+    font-size: 1.6rem;
+  }
+
+  .activity-option-card .act-title {
+    font-size: 0.95rem;
+  }
+
+  .activity-option-card .act-desc {
+    font-size: 0.76rem;
+  }
+
+  /* Desafío Cromático y Señales en Pantalla de Celular */
   .test-section-chromatic {
-    padding: 4px 0 16px;
+    padding: 2px 0 10px;
   }
 
   .player-active-bar {
-    padding: 6px 12px;
-    margin-bottom: 10px;
+    padding: 4px 10px;
+    margin-bottom: 6px;
     border-radius: 8px;
   }
 
   .player-info-tag {
-    font-size: 0.95rem;
-    gap: 6px;
+    font-size: 0.84rem;
+    gap: 4px;
   }
 
   .player-info-tag .label {
-    font-size: 0.78rem;
+    font-size: 0.68rem;
   }
 
   .chromatic-stage-card {
-    padding: 14px 10px 16px;
-    border-radius: 18px;
+    padding: 10px 8px 12px;
+    border-radius: 14px;
     border-width: 2px;
-  }
-
-  .chromatic-badge-pill {
-    padding: 4px 12px;
-    font-size: 0.76rem;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-
-  .chromatic-orb-wrapper {
-    min-height: 84px;
     margin-bottom: 8px;
   }
 
+  .chromatic-orb-wrapper {
+    min-height: 70px;
+    margin-bottom: 6px;
+  }
+
   .chromatic-orb {
-    width: 80px;
-    height: 80px;
+    width: 68px;
+    height: 68px;
+  }
+
+  /* Señales Objetivo en Celular */
+  .signals-stimulus-wrapper {
+    margin-bottom: 6px;
+  }
+
+  .signals-target-box {
+    width: 88px;
+    height: 88px;
+    border-radius: 12px;
+  }
+
+  .signals-target-img {
+    width: 68px;
+    height: 68px;
+  }
+
+  .signals-waiting-box {
+    font-size: 0.72rem;
+  }
+
+  .signals-waiting-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
   }
 
   .chromatic-title {
-    font-size: 1.55rem;
-    letter-spacing: 1.5px;
-    margin-bottom: 2px;
+    font-size: 1.15rem;
+    letter-spacing: 0.8px;
+    margin: 4px 0 2px;
   }
 
   .chromatic-desc {
-    font-size: 0.82rem;
-    line-height: 1.25;
-    margin-bottom: 12px;
-    max-width: 100%;
+    display: none; /* Ocultar texto explicativo en móvil para eliminar scroll y encuadrar todo el juego */
   }
 
   .btn-start-chromatic {
-    padding: 9px 24px;
-    font-size: 1.05rem;
-    letter-spacing: 1px;
+    padding: 7px 20px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Grilla de 6 Opciones de Señales en Celular (3x2 compacta) */
+  .signals-options-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+
+  .signal-option-card {
+    height: 76px !important;
+    padding: 4px !important;
+    border-radius: 10px !important;
+  }
+
+  .signal-option-card img {
+    width: 54px !important;
+    height: 54px !important;
+    max-width: 90% !important;
+    max-height: 90% !important;
+  }
+
+  .signal-option-card .signal-name-hint {
+    display: none !important; /* Ocultar texto cortado en móvil para foco visual puro */
   }
 
   /* Botones en Celular: 2x2 para fácil toque con pulgares */
@@ -2644,31 +2708,5 @@ html, body {
 .signal-option-card.disabled {
   pointer-events: none;
   opacity: 0.65;
-}
-
-@media (max-width: 480px) {
-  .signals-options-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-  .signal-option-card {
-    height: 94px;
-    padding: 6px 4px;
-  }
-  .signal-option-card img {
-    width: 50px;
-    height: 50px;
-  }
-  .signal-option-card .signal-name-hint {
-    font-size: 0.65rem;
-  }
-  .signals-target-box {
-    width: 110px;
-    height: 110px;
-  }
-  .signals-target-img {
-    width: 85px;
-    height: 85px;
-  }
 }
 
