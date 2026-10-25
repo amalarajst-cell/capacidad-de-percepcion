@@ -38,7 +38,7 @@ El participante ingresa su **Nombre y Apellido** y su **Correo Electrónico**, e
 - **Acceso Administrativo Discreto:** Desde la pantalla del participante, podés acceder en cualquier momento al panel de control presionando **`Control + Alt + A`**.
 - **Impacto en Tiempo Real:** Los tiempos impactan instantáneamente al completarse el test.
 - **Podio Top 3:** Puestos de Oro, Plata y Bronce con nombres y tiempos en vivo.
-- **Filtro por Modalidad:** Permite ver el ranking general de todos los niveles o filtrar solo por *Semáforo F1* o *Solo Colores*.
+- **Modalidad Oficial del Stand:** Actividad psicomotriz central *Reacción a Colores* (5 intentos por participante con cálculo de promedio y mejor tiempo).
 - **Métricas:** Total de participantes registrados, récord absoluto de la jornada y tiempo promedio de reacción.
 - **Buscador en Vivo:** Permite buscar participantes rápidamente por nombre o correo electrónico.
 - **Exportar a Excel (CSV):** Descarga inmediata con un clic de todos los contactos registrados (Posición, Nivel/Modalidad, Nombre, Email, Tiempo ms, Categoría, Fecha y Hora) formateado para Excel (`.csv` UTF-8 BOM).
