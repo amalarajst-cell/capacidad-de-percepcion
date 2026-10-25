@@ -6,8 +6,11 @@
 const STORAGE_KEY = 'cfl_reaction_participants_v1';
 const PENDING_KEY = 'cfl_pending_sync_v1';
 const CHANNEL_NAME = 'cfl_racing_stand_sync';
-const API_RECORDS = 'api/records';
-const API_STREAM = 'api/stream';
+// Firebase Realtime Database (REST). Las reglas de seguridad se definen en la consola de Firebase.
+const FIREBASE_DB_URL = 'https://stand-cfp412-default-rtdb.firebaseio.com';
+const REMOTE_RECORDS_URL = FIREBASE_DB_URL + '/records.json';
+const REMOTE_REFRESH_DEBOUNCE_MS = 150;
+const REMOTE_POLL_FALLBACK_MS = 15000;
 
 class RacingStorageManager {
   constructor() {
@@ -33,84 +36,95 @@ class RacingStorageManager {
       }
     });
 
-    // Sincronización entre dispositivos vía servidor del stand (si está disponible)
+    // Sincronización entre dispositivos vía Firebase
     this.serverOnline = false;
     this.eventSource = null;
-    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-      this.initServerSync();
-    }
+    this.refreshTimer = null;
+    this.initialSyncDone = false;
+    this.initServerSync();
   }
 
-  /* ---------------- Sincronización con el servidor del stand ---------------- */
+  /* ---------------- Sincronización con Firebase ---------------- */
   async initServerSync() {
-    const synced = await this.fullSync();
-    if (!synced || typeof EventSource === 'undefined') return;
+    await this.fullSync();
 
-    this.eventSource = new EventSource(API_STREAM);
-    // Al reconectar tras un corte de red, se vuelve a sincronizar todo
-    this.eventSource.onopen = () => { this.fullSync(); };
-    this.eventSource.onerror = () => { this.serverOnline = false; };
-    this.eventSource.onmessage = (event) => {
+    // Streaming en tiempo real (SSE nativo de Firebase); cada cambio dispara un refresco
+    if (typeof EventSource !== 'undefined') {
       try {
-        this.applyServerEvent(JSON.parse(event.data));
+        this.eventSource = new EventSource(REMOTE_RECORDS_URL);
+        const onChange = () => this.scheduleRefresh();
+        this.eventSource.addEventListener('put', onChange);
+        this.eventSource.addEventListener('patch', onChange);
+        this.eventSource.onerror = () => { this.serverOnline = false; };
       } catch (err) {
-        console.warn('Evento del servidor inválido', err);
+        console.warn('No se pudo abrir el stream de Firebase', err);
       }
-    };
+    }
+
+    // Respaldo por si el stream se corta (redes móviles inestables)
+    setInterval(() => this.fullSync(), REMOTE_POLL_FALLBACK_MS);
+    window.addEventListener('online', () => this.fullSync());
   }
 
-  /* Descarga los registros del servidor y envía los pendientes */
+  scheduleRefresh() {
+    clearTimeout(this.refreshTimer);
+    this.refreshTimer = setTimeout(() => this.fullSync(), REMOTE_REFRESH_DEBOUNCE_MS);
+  }
+
+  /* Descarga los registros remotos, envía los pendientes y notifica cambios */
   async fullSync() {
     try {
-      const res = await fetch(API_RECORDS, { cache: 'no-store' });
-      if (!res.ok) return false;
-      const serverRecords = await res.json();
-      if (!Array.isArray(serverRecords)) return false;
+      const res = await fetch(REMOTE_RECORDS_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const remoteRecords = data && typeof data === 'object' ? Object.values(data) : [];
 
       this.serverOnline = true;
-      const serverIds = new Set(serverRecords.map(r => r.id));
-      const pending = this.getPending().filter(r => !serverIds.has(r.id));
+      const remoteIds = new Set(remoteRecords.map(r => r.id));
+      const pending = this.getPending().filter(r => !remoteIds.has(r.id));
       this.setPending([]);
       pending.forEach(r => this.pushToServer(r));
 
-      const merged = [...pending, ...serverRecords].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      const merged = [...pending, ...remoteRecords]
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      const previousIds = new Set(this.getAll().map(r => r.id));
+      const newOnes = this.initialSyncDone
+        ? merged.filter(r => !previousIds.has(r.id))
+        : [];
+      const changed = merged.length !== previousIds.size
+        || merged.some(r => !previousIds.has(r.id));
+
+      const isFirstSync = !this.initialSyncDone;
       this.writeLocal(merged);
-      this.notifyListeners({ type: 'SYNCED', allRecords: merged });
+      this.initialSyncDone = true;
+
+      if (newOnes.length > 0) {
+        newOnes.reverse().forEach(record => {
+          this.notifyListeners({ type: 'NEW_RECORD', record, allRecords: merged });
+        });
+      } else if (changed || isFirstSync) {
+        this.notifyListeners({ type: 'SYNCED', allRecords: merged });
+      }
       return true;
     } catch (err) {
       this.serverOnline = false;
+      console.warn('Sin conexión con Firebase, se reintentará', err.message);
       return false;
     }
   }
 
-  applyServerEvent(event) {
-    const current = this.getAll();
-    let updated = current;
-
-    if (event.type === 'NEW_RECORD' && event.record) {
-      if (current.some(r => r.id === event.record.id)) return; // eco de nuestro propio envío
-      updated = [event.record, ...current];
-    } else if (event.type === 'CLEARED_ALL') {
-      updated = [];
-    } else if (event.type === 'DELETED_ONE') {
-      updated = current.filter(r => r.id !== event.deletedId);
-    } else {
-      return;
-    }
-
-    this.writeLocal(updated);
-    this.notifyListeners({ ...event, allRecords: updated });
-  }
-
   async pushToServer(record) {
     try {
-      const res = await fetch(API_RECORDS, {
-        method: 'POST',
+      const url = `${FIREBASE_DB_URL}/records/${encodeURIComponent(record.id)}.json`;
+      const res = await fetch(url, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(record)
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       this.serverOnline = true;
+      this.setPending(this.getPending().filter(r => r.id !== record.id));
     } catch (err) {
       // Se reintentará en la próxima sincronización
       const pending = this.getPending();
@@ -120,13 +134,16 @@ class RacingStorageManager {
     }
   }
 
-  async deleteOnServer(path) {
-    if (!this.serverOnline) return;
+  /* Borra un registro remoto por id, o todos si no se indica id */
+  async deleteOnServer(id) {
     try {
-      const res = await fetch(path, { method: 'DELETE' });
+      const url = id
+        ? `${FIREBASE_DB_URL}/records/${encodeURIComponent(id)}.json`
+        : REMOTE_RECORDS_URL;
+      const res = await fetch(url, { method: 'DELETE' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
     } catch (err) {
-      console.warn('No se pudo borrar en el servidor del stand', err);
+      console.warn('No se pudo borrar en Firebase', err);
     }
   }
 
@@ -213,6 +230,8 @@ class RacingStorageManager {
         this.channel.postMessage(message);
       }
       this.notifyListeners(message);
+      // Queda pendiente hasta confirmar el guardado remoto (pushToServer lo quita)
+      this.setPending([newEntry, ...this.getPending().filter(r => r.id !== newEntry.id)]);
       this.pushToServer(newEntry);
       return newEntry;
     } catch (e) {
@@ -231,7 +250,7 @@ class RacingStorageManager {
       }
       this.notifyListeners(message);
       this.setPending([]);
-      this.deleteOnServer(API_RECORDS);
+      this.deleteOnServer();
       return true;
     } catch (e) {
       console.error('Error al limpiar registros', e);
@@ -251,7 +270,7 @@ class RacingStorageManager {
       }
       this.notifyListeners(message);
       this.setPending(this.getPending().filter(r => r.id !== id));
-      this.deleteOnServer(API_RECORDS + '/' + encodeURIComponent(id));
+      this.deleteOnServer(id);
       return true;
     } catch (e) {
       console.error('Error al eliminar registro', e);
