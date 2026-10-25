@@ -106,9 +106,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSoundToggle = document.getElementById('btn-sound-toggle');
   const soundIcon = document.getElementById('sound-icon');
 
+  // Elementos de Selección de Actividad (Login)
+  const inputSelectedLevel = document.getElementById('selected-level-input');
+  const actOptCards = document.querySelectorAll('.activity-option-card');
+  actOptCards.forEach(card => {
+    card.addEventListener('click', () => {
+      actOptCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      const lvl = card.getAttribute('data-level');
+      if (inputSelectedLevel) inputSelectedLevel.value = lvl;
+    });
+  });
+
+  // Elementos de Estímulo y Opciones de Pantalla de Test
+  const colorsStimulusWrapper = document.getElementById('activity-colors-stimulus');
+  const signalsStimulusWrapper = document.getElementById('activity-signals-stimulus');
+  const signalsTargetBox = document.getElementById('signals-target-box');
+  const signalsWaitingBox = document.getElementById('signals-waiting-box');
+  const signalsTargetImg = document.getElementById('signals-target-img');
+  const colorButtonsContainer = document.getElementById('color-buttons-container');
+  const signalsOptionsContainer = document.getElementById('signals-options-container');
+
   // Variables de Estado para Ronda de 5 Intentos
   const TOTAL_ATTEMPTS = 5;
-  const currentLevel = 'Reacción a Colores';
+  let currentLevel = 'Reacción a Colores';
   let currentPlayer = { name: '', email: '' };
   let currentAttempt = 1;
   let roundAttempts = []; // [{ attempt: 1, timeMs: 320, color: 'red' }, ...]
@@ -119,6 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let waitingTimeout = null;
   let alertTimeout = null;
   let nextAttemptTimeout = null;
+
+  // Estado para Memotest Vial (Reflejo y Reacción)
+  let signalsPool = [];
+  let currentSignalOptions = [];
+  let currentTargetSignal = null;
 
   // Manejo de Sonido
   if (btnSoundToggle) {
@@ -142,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    currentLevel = inputSelectedLevel ? inputSelectedLevel.value : 'Reacción a Colores';
     currentPlayer = { name, email };
     activePlayerName.textContent = name;
 
@@ -157,7 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (activeLevelIndicator) {
-      activeLevelIndicator.textContent = 'REFLEJOS CROMÁTICOS';
+      activeLevelIndicator.textContent = currentLevel === 'Memotest Vial (Señales)'
+        ? 'MEMOTEST VIAL (REFLEJOS)'
+        : 'REFLEJOS CROMÁTICOS';
     }
 
     // Cambiar a pantalla de Test
@@ -211,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetAll) {
       currentAttempt = 1;
       roundAttempts = [];
+      signalsPool = [];
     }
     gameState = 'IDLE';
     activeColor = null;
@@ -223,20 +253,51 @@ document.addEventListener('DOMContentLoaded', () => {
       chromaticCard.classList.remove('shake');
     }
 
+    const isSignals = currentLevel === 'Memotest Vial (Señales)';
+
+    if (colorsStimulusWrapper) {
+      colorsStimulusWrapper.style.display = isSignals ? 'none' : 'flex';
+    }
+    if (signalsStimulusWrapper) {
+      signalsStimulusWrapper.style.display = isSignals ? 'flex' : 'none';
+    }
+    if (colorButtonsContainer) {
+      colorButtonsContainer.style.display = isSignals ? 'none' : 'grid';
+    }
+    if (signalsOptionsContainer) {
+      signalsOptionsContainer.style.display = isSignals ? 'grid' : 'none';
+    }
+
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-red';
     }
+    if (signalsWaitingBox) {
+      signalsWaitingBox.style.display = 'flex';
+      const txt = signalsWaitingBox.querySelector('span');
+      if (txt) txt.textContent = 'PREPARATE...';
+    }
+    if (signalsTargetImg) {
+      signalsTargetImg.style.display = 'none';
+    }
+    if (signalsTargetBox) {
+      signalsTargetBox.classList.remove('stimulus-active');
+    }
 
     if (chromaticAttemptText) {
-      chromaticAttemptText.textContent = `NIVEL 1 • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
+      const modeLabel = isSignals ? 'MEMOTEST VIAL' : 'NIVEL 1';
+      chromaticAttemptText.textContent = `${modeLabel} • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
     }
 
     if (stageTitle) {
-      stageTitle.textContent = currentAttempt === 1 ? 'REACCIÓN A COLORES' : `INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
+      stageTitle.textContent = currentAttempt === 1
+        ? (isSignals ? 'MEMOTEST VIAL: REFLEJOS' : 'REACCIÓN A COLORES')
+        : `INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
     }
 
     if (stageDesc) {
-      stageDesc.innerHTML = 'Aparecerá un color sorpresa. Presioná el botón correspondiente <strong>lo más rápido posible</strong>.';
+      stageDesc.innerHTML = isSignals
+        ? 'Aparecerá una señal de tránsito sorpresa. Tocá la señal correcta entre las opciones <strong>lo más rápido posible</strong>.'
+        : 'Aparecerá un color sorpresa. Presioná el botón correspondiente <strong>lo más rápido posible</strong>.';
     }
 
     if (btnStartRound) {
@@ -245,6 +306,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnStartLabel) {
       btnStartLabel.textContent = `COMENZAR INTENTO ${currentAttempt}`;
+    }
+
+    if (isSignals) {
+      prepareSignalsRound();
     }
   }
 
@@ -263,8 +328,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.racingAudio.playLightBeep(1);
 
+    const isSignals = currentLevel === 'Memotest Vial (Señales)';
+
     if (reactionOrb) {
       reactionOrb.className = 'chromatic-orb orb-waiting';
+    }
+    if (signalsWaitingBox) {
+      signalsWaitingBox.style.display = 'flex';
+      const txt = signalsWaitingBox.querySelector('span');
+      if (txt) txt.textContent = 'CONCENTRATE...';
+    }
+    if (signalsTargetImg) {
+      signalsTargetImg.style.display = 'none';
+    }
+    if (signalsTargetBox) {
+      signalsTargetBox.classList.remove('stimulus-active');
     }
 
     if (btnStartRound) {
@@ -276,20 +354,186 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (stageTitle) {
-      stageTitle.textContent = `¡ATENTO AL COLOR! (${currentAttempt}/${TOTAL_ATTEMPTS})`;
+      stageTitle.textContent = isSignals
+        ? `¡ATENTO A LA SEÑAL! (${currentAttempt}/${TOTAL_ATTEMPTS})`
+        : `¡ATENTO AL COLOR! (${currentAttempt}/${TOTAL_ATTEMPTS})`;
     }
 
     if (stageDesc) {
-      stageDesc.innerHTML = 'Esperá a que se ilumine el orbe central. <strong>¡No te anticipes!</strong>';
+      stageDesc.innerHTML = isSignals
+        ? 'Esperá a que aparezca la señal en la caja central. <strong>¡No te anticipes!</strong>'
+        : 'Esperá a que se ilumine el orbe central. <strong>¡No te anticipes!</strong>';
     }
 
-    // Retardo aleatorio de espera sorpresa (1300ms a 3200ms)
-    const randomDelay = Math.floor(Math.random() * 1900) + 1300;
+    if (isSignals) {
+      prepareSignalsRound();
+    }
+
+    // Retardo aleatorio de espera sorpresa (1200ms a 2800ms)
+    const randomDelay = Math.floor(Math.random() * 1600) + 1200;
 
     waitingTimeout = setTimeout(() => {
       if (gameState !== 'WAITING') return;
-      triggerColorStimulus();
+      if (isSignals) {
+        triggerSignalStimulus();
+      } else {
+        triggerColorStimulus();
+      }
     }, randomDelay);
+  }
+
+  // Barajado Fisher-Yates
+  function shuffleArray(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  // Preparar opciones de Señales Viales
+  function prepareSignalsRound() {
+    if (typeof SENALES_DATA === 'undefined' || !Array.isArray(SENALES_DATA) || SENALES_DATA.length === 0) {
+      return;
+    }
+    if (signalsPool.length < 6) {
+      signalsPool = shuffleArray(SENALES_DATA);
+    }
+
+    currentSignalOptions = [];
+    const usedIds = new Set();
+    while (currentSignalOptions.length < 4 && signalsPool.length > 0) {
+      const s = signalsPool.shift();
+      if (!usedIds.has(s.id)) {
+        usedIds.add(s.id);
+        currentSignalOptions.push(s);
+      }
+    }
+    currentTargetSignal = currentSignalOptions[Math.floor(Math.random() * currentSignalOptions.length)];
+
+    renderSignalOptions();
+  }
+
+  function renderSignalOptions() {
+    if (!signalsOptionsContainer) return;
+    signalsOptionsContainer.innerHTML = currentSignalOptions.map((signal, idx) => `
+      <div class="signal-option-card disabled" data-index="${idx}" data-id="${signal.id}" id="sig-card-${idx}">
+        <img src="${signal.image}" alt="${signal.name}">
+        <div class="signal-name-hint">${signal.name}</div>
+      </div>
+    `).join('');
+
+    signalsOptionsContainer.querySelectorAll('.signal-option-card').forEach((card) => {
+      card.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        const idx = parseInt(card.getAttribute('data-index'), 10);
+        handleSignalSelection(idx);
+      });
+    });
+  }
+
+  // Activación del Estímulo de Señal
+  function triggerSignalStimulus() {
+    if (!currentTargetSignal) return;
+    gameState = 'ACTIVE';
+
+    if (signalsWaitingBox) {
+      signalsWaitingBox.style.display = 'none';
+    }
+    if (signalsTargetImg) {
+      signalsTargetImg.src = currentTargetSignal.image;
+      signalsTargetImg.alt = currentTargetSignal.name;
+      signalsTargetImg.style.display = 'block';
+    }
+    if (signalsTargetBox) {
+      signalsTargetBox.classList.add('stimulus-active');
+    }
+
+    if (signalsOptionsContainer) {
+      signalsOptionsContainer.querySelectorAll('.signal-option-card').forEach(card => {
+        card.classList.remove('disabled');
+      });
+    }
+
+    startTime = performance.now();
+    window.racingAudio.playStartLightsOut();
+
+    if (btnStartRound) {
+      btnStartRound.className = 'btn-start-chromatic state-active';
+    }
+
+    if (btnStartLabel) {
+      btnStartLabel.textContent = '¡¡TOCÁ AHORA!!';
+    }
+
+    if (stageTitle) {
+      stageTitle.textContent = `¡¡${currentTargetSignal.name.toUpperCase()}!!`;
+    }
+
+    if (stageDesc) {
+      stageDesc.innerHTML = `¡Encontrá la señal <strong>${currentTargetSignal.name}</strong> a máxima velocidad!`;
+    }
+  }
+
+  function handleSignalSelection(selectedIndex) {
+    if (gameState === 'WAITING') {
+      handleEarlyTouch();
+      return;
+    }
+
+    if (gameState === 'IDLE') {
+      showAlert(`⚠️ Presioná el botón "COMENZAR INTENTO ${currentAttempt}"`);
+      return;
+    }
+
+    if (gameState === 'ACTIVE') {
+      const chosenSignal = currentSignalOptions[selectedIndex];
+      if (!chosenSignal) return;
+
+      const card = document.getElementById(`sig-card-${selectedIndex}`);
+
+      if (chosenSignal.id === currentTargetSignal.id) {
+        // Acierto
+        const endTime = performance.now();
+        reactionTime = Math.round(endTime - startTime);
+        if (card) card.classList.add('glow-hit');
+        handleReactionSuccess(reactionTime, chosenSignal.name, chosenSignal.image);
+      } else {
+        // Error
+        if (card) card.classList.add('glow-wrong');
+        handleWrongSignalTouch(chosenSignal);
+      }
+    }
+  }
+
+  function handleWrongSignalTouch(chosenSignal) {
+    clearAllTimers();
+    window.racingAudio.playWrongColorAlert();
+
+    if (chromaticCard) {
+      chromaticCard.classList.remove('shake');
+      void chromaticCard.offsetWidth;
+      chromaticCard.classList.add('shake');
+    }
+
+    const penaltyMs = 1000;
+    const targetName = currentTargetSignal ? currentTargetSignal.name : 'la correcta';
+    showAlert(`❌ ¡SEÑAL INCORRECTA! Era "${targetName}". Penalización de 1.000 s.`);
+
+    advanceAttempt(
+      {
+        attempt: currentAttempt,
+        timeMs: penaltyMs,
+        color: 'error',
+        signalName: chosenSignal ? chosenSignal.name : '',
+        signalImage: chosenSignal ? chosenSignal.image : '',
+        isError: true
+      },
+      `❌ ¡SEÑAL INCORRECTA!`,
+      `La señal era <strong>${targetName}</strong>. Penalización: <strong>1.000 s</strong>. Continuando...`,
+      1300
+    );
   }
 
   // 4. Activación del Estímulo Cromático
@@ -340,7 +584,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleColorSelection(chosenColor) {
     if (gameState === 'WAITING') {
-      // Salida en falso / Anticipación en el intento actual
       handleEarlyTouch();
       return;
     }
@@ -429,11 +672,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Reacción exitosa en un intento
-  function handleReactionSuccess(timeMs, matchedColor) {
+  function handleReactionSuccess(timeMs, matchedLabel, signalImage = null) {
     window.racingAudio.playTouchHit();
 
-    // Iluminar botón presionado
-    const targetBtn = colorButtons[matchedColor];
+    // Iluminar botón presionado si es color
+    const targetBtn = colorButtons[matchedLabel];
     if (targetBtn) {
       targetBtn.classList.add('glow-hit');
     }
@@ -442,7 +685,8 @@ document.addEventListener('DOMContentLoaded', () => {
       {
         attempt: currentAttempt,
         timeMs: timeMs,
-        color: matchedColor
+        color: matchedLabel,
+        signalImage: signalImage
       },
       `¡INTENTO ${currentAttempt} REGISTRADO!`,
       `Tiempo: <strong>${(timeMs / 1000).toFixed(3)} s</strong>. ¡Preparate para el siguiente intento!`,
@@ -462,7 +706,8 @@ document.addEventListener('DOMContentLoaded', () => {
       currentAttempt++;
 
       if (chromaticAttemptText) {
-        chromaticAttemptText.textContent = `NIVEL 1 • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
+        const modeLabel = currentLevel === 'Memotest Vial (Señales)' ? 'MEMOTEST VIAL' : 'NIVEL 1';
+        chromaticAttemptText.textContent = `${modeLabel} • INTENTO ${currentAttempt} DE ${TOTAL_ATTEMPTS}`;
       }
 
       if (stageTitle) {
@@ -528,7 +773,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const bestInSeconds = (bestTimeMs / 1000).toFixed(3);
 
     if (resultLevelBadge) {
-      resultLevelBadge.textContent = 'REACCIÓN A COLORES (5 INTENTOS)';
+      resultLevelBadge.textContent = currentLevel === 'Memotest Vial (Señales)'
+        ? 'MEMOTEST VIAL: REFLEJOS (5 INTENTOS)'
+        : 'REACCIÓN A COLORES (5 INTENTOS)';
     }
     if (resultTimeNumber) {
       resultTimeNumber.textContent = avgInSeconds;
@@ -574,10 +821,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const timeSec = (item.timeMs / 1000).toFixed(3);
         const errorTag = item.isError ? ' ⚠️' : '';
+        const signalThumbnail = item.signalImage ? `<img src="${item.signalImage}" alt="${item.signalName || ''}" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px; vertical-align: middle; margin-right: 4px;">` : '';
+
         return `
           <div class="attempt-result-chip ${isBest ? 'is-best' : ''} ${item.isError ? 'is-penalized' : ''}">
             <div class="chip-header">
-              <span class="chip-dot" style="background-color: ${colorDot};"></span>
+              ${signalThumbnail || `<span class="chip-dot" style="background-color: ${colorDot};"></span>`}
               <span class="chip-num">#${item.attempt}${isBest ? ' ★' : ''}${errorTag}</span>
             </div>
             <div class="chip-time">${timeSec}s</div>
@@ -638,19 +887,35 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Teclas para botones de colores
-    if (key === '1' || key === 'r') {
-      e.preventDefault();
-      handleColorSelection('red');
-    } else if (key === '2' || key === 'a') {
-      e.preventDefault();
-      handleColorSelection('yellow');
-    } else if (key === '3' || key === 'v') {
-      e.preventDefault();
-      handleColorSelection('green');
-    } else if (key === '4' || key === 'z') {
-      e.preventDefault();
-      handleColorSelection('blue');
+    // Teclas para botones de opciones (1, 2, 3, 4)
+    if (currentLevel === 'Memotest Vial (Señales)') {
+      if (key === '1') {
+        e.preventDefault();
+        handleSignalSelection(0);
+      } else if (key === '2') {
+        e.preventDefault();
+        handleSignalSelection(1);
+      } else if (key === '3') {
+        e.preventDefault();
+        handleSignalSelection(2);
+      } else if (key === '4') {
+        e.preventDefault();
+        handleSignalSelection(3);
+      }
+    } else {
+      if (key === '1' || key === 'r') {
+        e.preventDefault();
+        handleColorSelection('red');
+      } else if (key === '2' || key === 'a') {
+        e.preventDefault();
+        handleColorSelection('yellow');
+      } else if (key === '3' || key === 'v') {
+        e.preventDefault();
+        handleColorSelection('green');
+      } else if (key === '4' || key === 'z') {
+        e.preventDefault();
+        handleColorSelection('blue');
+      }
     }
   });
 
@@ -674,6 +939,11 @@ document.addEventListener('DOMContentLoaded', () => {
     Object.values(colorButtons).forEach(btn => {
       if (btn) btn.classList.remove('glow-hit');
     });
+    if (signalsOptionsContainer) {
+      signalsOptionsContainer.querySelectorAll('.signal-option-card').forEach(btn => {
+        btn.classList.remove('glow-hit', 'glow-wrong');
+      });
+    }
   }
 
   function showAlert(msg) {

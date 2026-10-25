@@ -114,6 +114,30 @@
           </div>
         </div>
 
+        <!-- Selector de Actividad del Stand -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>Actividad del Stand</span>
+            <span class="req">* Seleccioná tu desafío</span>
+          </label>
+          <div class="activity-selector-grid">
+            <div class="activity-option-card active" data-level="Reacción a Colores" id="act-opt-colors">
+              <div class="act-icon">🎨</div>
+              <div class="act-info">
+                <div class="act-title">Reacción a Colores</div>
+                <div class="act-desc">Estímulo cromático de alta velocidad (5 intentos)</div>
+              </div>
+            </div>
+            <div class="activity-option-card" data-level="Memotest Vial (Señales)" id="act-opt-signals">
+              <div class="act-icon">🚸</div>
+              <div class="act-info">
+                <div class="act-title">Memotest Vial: Reflejos</div>
+                <div class="act-desc">Estímulo sorpresa de señales de tránsito y reacción rápida (5 intentos)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Botón de Ignición / Comienzo -->
         <button type="submit" id="btn-start-engine" class="btn-ignition">
           <span>INGRESAR AL DESAFÍO</span>
@@ -167,9 +191,20 @@
           </div>
         </div>
 
-        <!-- Orbe Central Luminoso -->
-        <div class="chromatic-orb-wrapper">
+        <!-- Estímulo Actividad A: Orbe Central Luminoso (Colores) -->
+        <div class="chromatic-orb-wrapper" id="activity-colors-stimulus">
           <div id="reaction-orb" class="chromatic-orb orb-red" aria-label="Color del estímulo"></div>
+        </div>
+
+        <!-- Estímulo Actividad B: Caja de Señal Objetivo (Memotest Vial) -->
+        <div class="signals-stimulus-wrapper" id="activity-signals-stimulus" style="display: none;">
+          <div class="signals-target-box" id="signals-target-box">
+            <div class="signals-waiting-box" id="signals-waiting-box">
+              <div class="signals-waiting-spinner"></div>
+              <span>PREPARATE...</span>
+            </div>
+            <img src="" alt="Señal Objetivo" id="signals-target-img" class="signals-target-img" style="display: none;">
+          </div>
         </div>
 
         <!-- Título y Subtítulo -->
@@ -191,7 +226,7 @@
         </div>
       </div>
 
-      <!-- Fila Inferior de 4 Botones de Colores -->
+      <!-- Fila Inferior Actividad A: 4 Botones de Colores -->
       <div class="chromatic-buttons-grid" id="color-buttons-container">
         <!-- ROJO -->
         <button type="button" class="chromatic-btn btn-color-red" data-color="red" data-title="ROJO" id="btn-color-red">
@@ -220,6 +255,11 @@
           <span class="btn-color-name">AZUL</span>
           <span class="btn-color-role">Información</span>
         </button>
+      </div>
+
+      <!-- Fila Inferior Actividad B: 4 Tarjetas de Señales Viales -->
+      <div class="signals-options-grid" id="signals-options-container" style="display: none;">
+        <!-- Generado dinámicamente: 4 tarjetas de opciones -->
       </div>
     </section>
 
@@ -294,6 +334,7 @@
 
   <!-- Scripts -->
   <script src="js/audio.js"></script>
+  <script src="js/senales-data.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/participant.js"></script>
 </body>

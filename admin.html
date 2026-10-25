@@ -141,10 +141,13 @@
     <section class="screen-card table-card-wrapper" style="margin-top: 24px;">
         <!-- Barra de herramientas de Admin -->
         <div class="admin-toolbar">
-          <!-- Actividad Única del Stand -->
-          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.35); border-radius: 8px; color: #FFD700; font-family: var(--font-race); font-size: 0.95rem; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap;">
-            <span>🎨</span>
-            <span>REACCIÓN A COLORES</span>
+          <!-- Filtro por Actividad del Stand -->
+          <div class="filter-box-admin">
+            <select id="admin-level-filter" class="select-admin-filter" aria-label="Filtrar por actividad">
+              <option value="ALL">🏁 TODAS LAS ACTIVIDADES</option>
+              <option value="Reacción a Colores">🎨 REACCIÓN A COLORES</option>
+              <option value="Memotest Vial (Señales)">🚸 MEMOTEST VIAL (SEÑALES)</option>
+            </select>
           </div>
 
           <!-- Buscador -->
@@ -167,6 +170,7 @@
               <tr>
                 <th style="width: 60px;">POS</th>
                 <th>CONDUCTOR/A / HORA</th>
+                <th>ACTIVIDAD</th>
                 <th>TIEMPO PROMEDIO</th>
                 <th>MEJOR INTENTO</th>
                 <th>CATEGORÍA</th>

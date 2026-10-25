@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sorted.length === 0) {
       leaderboardBody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+          <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
             ${searchTerm ? 'No se encontraron participantes que coincidan con la búsqueda.' : 'No hay participantes registrados en este filtro. ¡Iniciá el test desde la pantalla principal!'}
           </td>
         </tr>
@@ -177,6 +177,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const avgSec = (item.timeMs / 1000).toFixed(3);
       const bestSec = item.bestTimeMs ? (item.bestTimeMs / 1000).toFixed(3) : avgSec;
 
+      const isSignals = item.level === 'Memotest Vial (Señales)';
+      const activityTag = isSignals
+        ? '<span style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; background:rgba(255,183,3,0.15); color:#ffb703; border:1px solid rgba(255,183,3,0.4); font-size:0.82rem; font-weight:800; letter-spacing:0.3px; white-space:nowrap;">🚸 SEÑALES</span>'
+        : '<span style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; background:rgba(92,225,230,0.15); color:#5ce1e6; border:1px solid rgba(92,225,230,0.4); font-size:0.82rem; font-weight:800; letter-spacing:0.3px; white-space:nowrap;">🎨 COLORES</span>';
+
       return `
         <tr class="${isNew}" data-id="${item.id}">
           <td style="width: 60px;">
@@ -188,6 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <span>🕒 ${timeStr} hs</span>
               ${item.email ? `<span style="opacity: 0.6;">• ${escapeHtml(item.email)}</span>` : ''}
             </div>
+          </td>
+          <td>
+            ${activityTag}
           </td>
           <td>
             <span class="table-time-cell table-avg-time">${avgSec} s</span>
@@ -256,10 +264,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAddDemo.addEventListener('click', () => {
       const demoUsers = [
         { name: 'Lucas Benítez', email: 'lucas.b@gmail.com', level: 'Reacción a Colores', timeMs: 204 },
-        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', level: 'Reacción a Colores', timeMs: 218 },
-        { name: 'Martín Rossi', email: 'mrossi@outlook.com', level: 'Reacción a Colores', timeMs: 245 },
-        { name: 'Camila Torres', email: 'cami.torres@gmail.com', level: 'Reacción a Colores', timeMs: 270 },
-        { name: 'Alejandro Morales', email: 'amorales@yahoo.com.ar', level: 'Reacción a Colores', timeMs: 320 }
+        { name: 'Valeria Gómez', email: 'valeria.g@gmail.com', level: 'Memotest Vial (Señales)', timeMs: 215 },
+        { name: 'Sofía Álvarez', email: 'sofia.alvarez@hotmail.com', level: 'Reacción a Colores', timeMs: 228 },
+        { name: 'Joaquín Navarro', email: 'jnavarro@outlook.com', level: 'Memotest Vial (Señales)', timeMs: 242 },
+        { name: 'Martín Rossi', email: 'mrossi@outlook.com', level: 'Reacción a Colores', timeMs: 265 }
       ];
 
       demoUsers.forEach(u => {
