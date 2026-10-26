@@ -280,7 +280,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log('===========================================================');
-  console.log('🏁 SERVIDOR LOCAL DEL STAND ACTIVO (CFP 412 - MANEJO SEGURO)');
+  console.log('🏁 SERVIDOR LOCAL DEL STAND ACTIVO (CFL 412 - MANEJO SEGURO)');
   console.log('===========================================================');
   console.log(`Local (en esta máquina): http://localhost:${PORT}`);
   console.log(`Registros cargados: ${records.length} (data/records.json)`);
